@@ -129,45 +129,71 @@ export const categoryUpdateSchema = z
   })
   .partial();
 
-export const couponInputSchema = z
-  .object({
-    code: z
-      .string()
-      .trim()
-      .min(3, "Coupon code must be at least 3 characters.")
-      .max(30)
-      .regex(/^[A-Za-z0-9_-]+$/, "Coupon code can only contain letters, numbers, dashes and underscores."),
-    discountType: z.enum(["percentage", "fixed"]),
-    discountValue: z.number().positive("Discount value must be greater than 0.").max(10000000),
-    minimumOrderValue: z.number().nonnegative().max(10000000).default(0),
-    maximumDiscount: z.number().positive().max(10000000).nullable().default(null),
-    startsAt: z.string().trim().max(40).nullable().default(null),
-    expiresAt: z.string().trim().max(40).nullable().default(null),
-    usageLimit: z.number().int().positive().max(1000000).nullable().default(null),
-    perCustomerLimit: z.number().int().positive().max(100).nullable().default(null),
-    active: z.boolean().default(true)
-  })
+export const couponBaseSchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .min(3, "Coupon code must be at least 3 characters.")
+    .max(30)
+    .regex(/^[A-Za-z0-9_-]+$/, "Coupon code can only contain letters, numbers, dashes and underscores."),
+  discountType: z.enum(["percentage", "fixed"]),
+  discountValue: z.number().positive("Discount value must be greater than 0.").max(10000000),
+  minimumOrderValue: z.number().nonnegative().max(10000000).default(0),
+  maximumDiscount: z.number().positive().max(10000000).nullable().default(null),
+  startsAt: z.string().trim().max(40).nullable().default(null),
+  expiresAt: z.string().trim().max(40).nullable().default(null),
+  usageLimit: z.number().int().positive().max(1000000).nullable().default(null),
+  perCustomerLimit: z.number().int().positive().max(100).nullable().default(null),
+  active: z.boolean().default(true)
+});
+
+export const couponInputSchema = couponBaseSchema.superRefine((value, ctx) => {
+  if (value.discountType === "percentage" && value.discountValue > 100) {
+    ctx.addIssue({ code: "custom", path: ["discountValue"], message: "Percentage discount cannot exceed 100." });
+  }
+  if (value.discountType === "fixed" && value.discountValue <= 0) {
+    ctx.addIssue({ code: "custom", path: ["discountValue"], message: "Fixed discount must be greater than 0." });
+  }
+  const start = value.startsAt ? new Date(value.startsAt) : null;
+  const end = value.expiresAt ? new Date(value.expiresAt) : null;
+  if (start && Number.isNaN(start.getTime())) {
+    ctx.addIssue({ code: "custom", path: ["startsAt"], message: "Start date is not valid." });
+  }
+  if (end && Number.isNaN(end.getTime())) {
+    ctx.addIssue({ code: "custom", path: ["expiresAt"], message: "Expiry date is not valid." });
+  }
+  if (start && end && !Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime()) && end <= start) {
+    ctx.addIssue({ code: "custom", path: ["expiresAt"], message: "Expiry date must be after the start date." });
+  }
+});
+
+export const couponUpdateSchema = couponBaseSchema.partial()
   .superRefine((value, ctx) => {
-    if (value.discountType === "percentage" && value.discountValue > 100) {
+    const discountType = value.discountType;
+    if (discountType === "percentage" && typeof value.discountValue === "number" && value.discountValue > 100) {
       ctx.addIssue({ code: "custom", path: ["discountValue"], message: "Percentage discount cannot exceed 100." });
     }
-    if (value.discountType === "fixed" && value.discountValue <= 0) {
+    if (discountType === "fixed" && typeof value.discountValue === "number" && value.discountValue <= 0) {
       ctx.addIssue({ code: "custom", path: ["discountValue"], message: "Fixed discount must be greater than 0." });
     }
-    const start = value.startsAt ? new Date(value.startsAt) : null;
-    const end = value.expiresAt ? new Date(value.expiresAt) : null;
-    if (start && Number.isNaN(start.getTime())) {
-      ctx.addIssue({ code: "custom", path: ["startsAt"], message: "Start date is not valid." });
+    const startRaw = value.startsAt;
+    const endRaw = value.expiresAt;
+    if (startRaw && typeof startRaw === "string") {
+      const start = new Date(startRaw);
+      if (Number.isNaN(start.getTime())) ctx.addIssue({ code: "custom", path: ["startsAt"], message: "Start date is not valid." });
     }
-    if (end && Number.isNaN(end.getTime())) {
-      ctx.addIssue({ code: "custom", path: ["expiresAt"], message: "Expiry date is not valid." });
+    if (endRaw && typeof endRaw === "string") {
+      const end = new Date(endRaw);
+      if (Number.isNaN(end.getTime())) ctx.addIssue({ code: "custom", path: ["expiresAt"], message: "Expiry date is not valid." });
     }
-    if (start && end && !Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime()) && end <= start) {
-      ctx.addIssue({ code: "custom", path: ["expiresAt"], message: "Expiry date must be after the start date." });
+    if (startRaw && endRaw && typeof startRaw === "string" && typeof endRaw === "string") {
+      const start = new Date(startRaw);
+      const end = new Date(endRaw);
+      if (!Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime()) && end <= start) {
+        ctx.addIssue({ code: "custom", path: ["expiresAt"], message: "Expiry date must be after the start date." });
+      }
     }
   });
-
-export const couponUpdateSchema = couponInputSchema.partial();
 
 export const customOrderStatusSchema = z.object({
   status: z.enum(["new", "quoted", "in-progress", "completed", "cancelled"]),
