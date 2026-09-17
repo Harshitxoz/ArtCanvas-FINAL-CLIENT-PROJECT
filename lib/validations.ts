@@ -88,6 +88,19 @@ export const orderStatusSchema = z.object({
   status: z.enum(["pending", "paid", "processing", "packed", "shipped", "delivered", "cancelled", "refunded"])
 });
 
+export const orderShippingSchema = z.object({
+  shippingCarrier: z.string().max(100).optional().or(z.literal("")),
+  trackingNumber: z.string().max(100).optional().or(z.literal("")),
+  trackingUrl: z.string().max(500).optional().or(z.literal("")).refine(v => !v || /^https?:\/\//i.test(v), { message: "Tracking URL must be a valid URL." }),
+  estimatedDelivery: z.string().max(100).optional().or(z.literal("")),
+  adminShippingNotes: z.string().max(2000).optional().or(z.literal(""))
+});
+
+export const orderRefundSchema = z.object({
+  amount: z.number().positive().max(10000000),
+  note: z.string().max(2000).optional().or(z.literal(""))
+});
+
 export const orderSchema = z.object({
   items: z.array(z.object({
     productId: z.string().min(1),

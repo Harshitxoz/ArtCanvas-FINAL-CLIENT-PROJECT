@@ -1,6 +1,13 @@
 import type { ObjectId } from "mongodb";
 import type { CartItem, OrderStatus } from "@/types";
 
+export interface OrderRefund {
+  id: string;
+  amount: number;
+  createdAt: string;
+  note?: string;
+}
+
 export interface OrderDocument {
   _id?: ObjectId;
   userId?: ObjectId;
@@ -16,6 +23,12 @@ export interface OrderDocument {
   status: OrderStatus;
   paymentStatus: "pending" | "paid" | "failed";
   paymentId?: string;
+  shippingCarrier?: string;
+  trackingNumber?: string;
+  trackingUrl?: string;
+  estimatedDelivery?: string;
+  adminShippingNotes?: string;
+  refund?: OrderRefund;
   createdAt: Date;
   updatedAt: Date;
 }

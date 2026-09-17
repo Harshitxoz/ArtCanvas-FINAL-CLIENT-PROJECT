@@ -9,6 +9,8 @@ import { getDb } from "@/lib/db";
 import { formatINR } from "@/lib/utils";
 import type { OrderDocument } from "@/models/order";
 import type { CartItem } from "@/types";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const STATUS_STYLES: Record<string, string> = {
   pending: "bg-black/5 text-black/60",
@@ -109,21 +111,74 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
       </div>
 
       <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-bold">Customer & Delivery</h2>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-xl bg-black/[0.03] p-4 text-sm">
-            <b className="block text-black/70">Contact</b>
-            <p className="mt-1 font-semibold">{order.customer.name}</p>
-            <p className="text-black/60">{order.customer.email}</p>
-            <p className="text-black/60">{order.customer.phone}</p>
-          </div>
-          <div className="rounded-xl bg-black/[0.03] p-4 text-sm">
-            <b className="block text-black/70">Shipping Address</b>
-            <p className="mt-1">{order.customer.address}</p>
-            <p>{order.customer.city}, {order.customer.state} {order.customer.postalCode}</p>
-          </div>
-        </div>
+        <h2 className="text-xl font-bold">Shipping</h2>
+        <p className="mt-1 text-sm text-black/55">Add carrier, tracking number, tracking URL and estimated delivery when the order is shipped.</p>
+        <ShippingForm orderId={orderId} initial={{ shippingCarrier: order.shippingCarrier || "", trackingNumber: order.trackingNumber || "", trackingUrl: order.trackingUrl || "", estimatedDelivery: order.estimatedDelivery || "", adminShippingNotes: order.adminShippingNotes || "" }} />
       </section>
-    </AdminShell>
+
+      <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
+        <h2 className="text-xl font-bold">Refund</h2>
+        <p className="mt-1 text-sm text-black/55">Process a real Razorpay refund for this order. The order status is set to refunded only after the refund succeeds.</p>
+        <RefundForm orderId={orderId} orderTotal={order.total} existingRefund={order.refund} />
+      </section>
+
+      <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
+        <h2 className="text-xl font-bold">Order History</h2>
+        <p className="mt-1 text-sm text-black/55">Status changes and refund actions are recorded here.</p>
+        <OrderHistory orderId={orderId} />
+      </section>
+
+      <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
+        <h2 className="text-xl font-bold">Notes</h2>
+        <p className="mt-1 text-sm text-black/55">Internal admin notes. These are never shown to the customer.</p>
+        <NotesForm orderId={orderId} initialNote={order.adminNotes || ""} />
+      </section>
+
+      {order.refund && (
+        <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
+          <h2 className="text-xl font-bold">Refund Details</h2>
+          <div className="mt-4 rounded-xl bg-orange-50 p-4 text-sm">
+            <p className="font-semibold">Refunded</p>
+            <p className="mt-1 text-black/60">Refund ID: {order.refund.id}</p>
+            <p className="text-black/60">Amount: {formatINR(order.refund.amount)}</p>
+            <p className="text-black/60">Processed: {order.refund.createdAt ? new Date(order.refund.createdAt).toLocaleString("en-IN") : "—"}</p>
+            {order.refund.note && <p className="mt-2 text-black/60">Note: {order.refund.note}</p>}
+          </div>
+        </section>
+      )}
+
+type OrderHistoryData = { note: string; createdAt: string | Date }[];
+
+function OrderHistory({ data }: { data: OrderHistoryData }) {
+  const isNew = data.length === 0;
+  if (isNew) {
+    return (
+      <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
+        <h2 className="text-xl font-bold">Order History</h2>
+        <p className="mt-4 rounded-xl bg-[#eee9e1] p-4 text-sm text-black/55">
+          No admin actions have been recorded for this order yet.
+        </p>
+      </section>
+    );
+  }
+  return (
+    <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
+      <h2 className="text-xl font-bold">Order History</h2>
+      <ol className="mt-4 list-decimal list-inside space-y-2 text-sm">
+        {data.map((entry, index) => (
+          <li key={index} className="text-black/70">
+            <p className="font-semibold text-black">
+              {entry.note}
+              <span className="ml-2 text-black/40">
+                {new Date(entry.createdAt).toLocaleString("en-IN", {
+                  dateStyle: "short",
+                  timeStyle: "short",
+                })}
+              </span>
+            </p>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }

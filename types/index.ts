@@ -96,11 +96,22 @@ export interface Order {
   subtotal: number;
   discount?: number;
   couponCode?: string;
-  shipping: number;
+    shipping: number;
   total: number;
   status: OrderStatus;
   paymentStatus: "pending" | "paid" | "failed";
   paymentId?: string;
+  shippingCarrier?: string;
+  trackingNumber?: string;
+  trackingUrl?: string;
+  estimatedDelivery?: string;
+  adminShippingNotes?: string;
+  refund?: {
+    id: string;
+    amount: number;
+    createdAt: string;
+    note?: string;
+  };
   createdAt?: string;
 }
 
