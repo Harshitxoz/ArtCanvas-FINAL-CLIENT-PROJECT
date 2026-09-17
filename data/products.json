@@ -1,0 +1,184 @@
+[
+  {
+    "title": "Mountain Sunset",
+    "slug": "mountain-sunset",
+    "artType": "hand-painted",
+    "category": "nature",
+    "description": "An original mountain landscape painted in warm sunset tones, designed to bring a calm focal point to a living room, study or bedroom.",
+    "images": [
+      "/images/hero.png",
+      "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=85"
+    ],
+    "sizes": [
+      {
+        "label": "18 \u00d7 24 in",
+        "width": 18,
+        "height": 24,
+        "price": 3499,
+        "stock": 4
+      },
+      {
+        "label": "24 \u00d7 36 in",
+        "width": 24,
+        "height": 36,
+        "price": 4999,
+        "stock": 6
+      },
+      {
+        "label": "36 \u00d7 48 in",
+        "width": 36,
+        "height": 48,
+        "price": 7499,
+        "stock": 2
+      }
+    ],
+    "featured": true,
+    "bestseller": true,
+    "active": true
+  },
+  {
+    "title": "Blue Bloom",
+    "slug": "blue-bloom",
+    "artType": "printed-canvas",
+    "category": "abstract",
+    "description": "A premium archival canvas print with a rich blue botanical-inspired composition.",
+    "images": [
+      "https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&w=1200&q=85"
+    ],
+    "sizes": [
+      {
+        "label": "18 \u00d7 24 in",
+        "width": 18,
+        "height": 24,
+        "price": 1499,
+        "stock": 10
+      },
+      {
+        "label": "24 \u00d7 36 in",
+        "width": 24,
+        "height": 36,
+        "price": 2199,
+        "stock": 8
+      }
+    ],
+    "featured": true,
+    "bestseller": true,
+    "active": true
+  },
+  {
+    "title": "Quiet Lines",
+    "slug": "quiet-lines",
+    "artType": "hand-painted",
+    "category": "minimalist",
+    "description": "A minimalist original built around organic lines and neutral tones.",
+    "images": [
+      "https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=1200&q=85"
+    ],
+    "sizes": [
+      {
+        "label": "18 \u00d7 24 in",
+        "width": 18,
+        "height": 24,
+        "price": 2999,
+        "stock": 5
+      },
+      {
+        "label": "24 \u00d7 36 in",
+        "width": 24,
+        "height": 36,
+        "price": 4499,
+        "stock": 3
+      }
+    ],
+    "featured": true,
+    "bestseller": false,
+    "active": true
+  },
+  {
+    "title": "Modern Blocks",
+    "slug": "modern-blocks",
+    "artType": "printed-canvas",
+    "category": "modern",
+    "description": "A bold modern print for clean interiors, studios and creative workspaces.",
+    "images": [
+      "https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=1200&q=85"
+    ],
+    "sizes": [
+      {
+        "label": "18 \u00d7 24 in",
+        "width": 18,
+        "height": 24,
+        "price": 1299,
+        "stock": 12
+      },
+      {
+        "label": "24 \u00d7 36 in",
+        "width": 24,
+        "height": 36,
+        "price": 1999,
+        "stock": 10
+      }
+    ],
+    "featured": true,
+    "bestseller": true,
+    "active": true
+  },
+  {
+    "title": "Golden Retriever",
+    "slug": "golden-retriever",
+    "artType": "hand-painted",
+    "category": "animals",
+    "description": "A warm character portrait of a golden retriever, painted with expressive brushwork.",
+    "images": [
+      "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1200&q=85"
+    ],
+    "sizes": [
+      {
+        "label": "18 \u00d7 24 in",
+        "width": 18,
+        "height": 24,
+        "price": 3999,
+        "stock": 4
+      },
+      {
+        "label": "24 \u00d7 36 in",
+        "width": 24,
+        "height": 36,
+        "price": 5999,
+        "stock": 2
+      }
+    ],
+    "featured": false,
+    "bestseller": true,
+    "active": true
+  },
+  {
+    "title": "Stillness",
+    "slug": "stillness",
+    "artType": "printed-canvas",
+    "category": "spiritual",
+    "description": "A peaceful spiritual-inspired print intended for meditation and quiet corners.",
+    "images": [
+      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=85"
+    ],
+    "sizes": [
+      {
+        "label": "18 \u00d7 24 in",
+        "width": 18,
+        "height": 24,
+        "price": 1399,
+        "stock": 15
+      },
+      {
+        "label": "24 \u00d7 36 in",
+        "width": 24,
+        "height": 36,
+        "price": 2099,
+        "stock": 8
+      }
+    ],
+    "featured": false,
+    "bestseller": false,
+    "active": true
+  }
+]

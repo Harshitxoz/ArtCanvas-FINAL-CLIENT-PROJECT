@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Nature",
+    "slug": "nature",
+    "description": "Mountains, forests, skies and peaceful landscapes.",
+    "image": "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=700&q=85"
+  },
+  {
+    "name": "Abstract",
+    "slug": "abstract",
+    "description": "Expressive colors, shapes and contemporary compositions.",
+    "image": "https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&w=700&q=85"
+  },
+  {
+    "name": "Minimalist",
+    "slug": "minimalist",
+    "description": "Calm, elegant pieces for modern spaces.",
+    "image": "https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=700&q=85"
+  },
+  {
+    "name": "Modern",
+    "slug": "modern",
+    "description": "Statement artwork with a contemporary edge.",
+    "image": "https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=700&q=85"
+  },
+  {
+    "name": "Portraits",
+    "slug": "portraits",
+    "description": "Character, emotion and human stories.",
+    "image": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=700&q=85"
+  },
+  {
+    "name": "Animals",
+    "slug": "animals",
+    "description": "Beautiful animal and wildlife artwork.",
+    "image": "https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=700&q=85"
+  },
+  {
+    "name": "Spiritual",
+    "slug": "spiritual",
+    "description": "Peaceful and devotional wall art.",
+    "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=700&q=85"
+  },
+  {
+    "name": "Custom Art",
+    "slug": "custom-art",
+    "description": "Commission a piece made for your space.",
+    "image": "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=700&q=85"
+  }
+]

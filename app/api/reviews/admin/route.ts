@@ -1,0 +1,2 @@
+import {NextResponse} from "next/server";import {getDb} from "@/lib/db";import {requireAdmin} from "@/lib/auth";
+export async function GET(){try{await requireAdmin();const docs=await (await getDb()).collection("reviews").find({}).sort({createdAt:-1}).limit(500).toArray();return NextResponse.json(docs.map(d=>({...d,_id:String(d._id)})))}catch(e){const u=e instanceof Error&&e.message==="UNAUTHORIZED";return NextResponse.json({error:u?"Unauthorized":"Database unavailable"},{status:u?401:503})}}

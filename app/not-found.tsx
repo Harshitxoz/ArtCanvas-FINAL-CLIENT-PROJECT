@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function NotFound(){return <div className="mx-auto max-w-xl px-4 py-24 text-center"><p className="text-sm font-bold uppercase tracking-widest text-[#9a5d19]">404</p><h1 className="mt-3 text-5xl font-bold">Artwork not found</h1><Link href="/shop" className="mt-7 inline-block rounded-full bg-[#9a5d19] px-6 py-3 font-semibold text-white">Back to Shop</Link></div>}

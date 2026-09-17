@@ -1,0 +1,1 @@
+export const dynamic="force-dynamic";import {AdminShell} from "@/components/admin/AdminShell";import {requireAdmin} from "@/lib/auth";import {CategoriesManager} from "@/components/admin/BusinessManagers";export default async function Page(){await requireAdmin();return <AdminShell><CategoriesManager/></AdminShell>}

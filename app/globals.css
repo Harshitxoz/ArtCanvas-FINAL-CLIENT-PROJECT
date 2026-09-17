@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+:root { --cream: #fffdf9; --ink: #17130f; --brown: #9a5d19; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--cream); color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
+h1,h2,h3,h4 { font-family: Georgia, "Times New Roman", serif; }
+a { transition: opacity .2s ease, color .2s ease; }
+a:hover { color: var(--brown); }
+::selection { background: #d89442; color: white; }
+.container-page { width: min(100% - 2rem, 80rem); margin-inline: auto; }

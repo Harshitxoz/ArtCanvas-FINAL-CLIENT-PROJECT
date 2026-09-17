@@ -1,0 +1,8 @@
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { toast } from "sonner";
+export default function RegisterPage(){const [form,setForm]=useState({name:"",email:"",password:""});const [loading,setLoading]=useState(false);const router=useRouter();async function submit(e:React.FormEvent){e.preventDefault();setLoading(true);try{const r=await fetch("/api/auth/register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(form)});const d=await r.json();if(!r.ok)throw new Error(d.error);toast.success("Account created");router.push("/account")}catch(e){toast.error(e instanceof Error?e.message:"Registration failed")}finally{setLoading(false)}}return <section className="mx-auto max-w-md px-4 py-16"><h1 className="text-4xl font-bold">Create account</h1><form onSubmit={submit} className="mt-8 grid gap-4 rounded-3xl bg-white p-7 shadow-sm"><label className="text-sm font-semibold">Name<Input required value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/></label><label className="text-sm font-semibold">Email<Input type="email" required value={form.email} onChange={e=>setForm({...form,email:e.target.value})}/></label><label className="text-sm font-semibold">Password<Input type="password" required minLength={8} value={form.password} onChange={e=>setForm({...form,password:e.target.value})}/></label><Button disabled={loading}>{loading?"Creating…":"Create Account"}</Button><p className="text-center text-sm text-black/55">Already registered? <Link className="font-semibold text-[#9a5d19]" href="/login">Sign in</Link></p></form></section>}

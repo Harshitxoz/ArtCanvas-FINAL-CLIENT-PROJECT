@@ -1,0 +1,7 @@
+import { NextResponse } from "next/server";
+import { getDb } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
+import { z } from "zod";
+const schema=z.object({name:z.string().min(2).max(80),slug:z.string().min(2).max(100).regex(/^[a-z0-9-]+$/),description:z.string().max(500).default(""),image:z.string().max(1000).default(""),active:z.boolean().default(true)});
+export async function GET(){try{const db=await getDb();const docs=await db.collection("categories").find({}).sort({name:1}).toArray();return NextResponse.json(docs.map(d=>({...d,_id:String(d._id)})))}catch{return NextResponse.json({error:"Database unavailable"},{status:503})}}
+export async function POST(req:Request){try{await requireAdmin();const p=schema.safeParse(await req.json());if(!p.success)return NextResponse.json({error:"Invalid category"},{status:400});const db=await getDb();if(await db.collection("categories").findOne({$or:[{slug:p.data.slug},{name:p.data.name}]}))return NextResponse.json({error:"Category already exists"},{status:409});const now=new Date();const r=await db.collection("categories").insertOne({...p.data,createdAt:now,updatedAt:now});return NextResponse.json({ok:true,id:String(r.insertedId)},{status:201})}catch(e){return NextResponse.json({error:e instanceof Error&&e.message==="UNAUTHORIZED"?"Unauthorized":"Could not create category"},{status:e instanceof Error&&e.message==="UNAUTHORIZED"?401:500})}}

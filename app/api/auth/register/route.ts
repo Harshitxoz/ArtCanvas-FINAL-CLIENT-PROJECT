@@ -1,0 +1,5 @@
+import { NextResponse } from "next/server";
+import { getDb } from "@/lib/db";
+import { createSession, hashPassword } from "@/lib/auth";
+import { registerSchema } from "@/lib/validations";
+export async function POST(req:Request){try{const parsed=registerSchema.safeParse(await req.json());if(!parsed.success)return NextResponse.json({error:"Invalid registration data."},{status:400});const {name,email,password}=parsed.data;const db=await getDb();const exists=await db.collection("users").findOne({email:email.toLowerCase()});if(exists)return NextResponse.json({error:"Email already registered."},{status:409});const now=new Date();const result=await db.collection("users").insertOne({name,email:email.toLowerCase(),passwordHash:await hashPassword(password),role:"customer",createdAt:now,updatedAt:now});await createSession({id:String(result.insertedId),name,email:email.toLowerCase(),role:"customer"});return NextResponse.json({ok:true,user:{id:String(result.insertedId),name,email:email.toLowerCase(),role:"customer"}})}catch(e){return NextResponse.json({error:e instanceof Error?e.message:"Registration failed."},{status:500})}}
