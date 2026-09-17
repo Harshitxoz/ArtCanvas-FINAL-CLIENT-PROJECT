@@ -68,7 +68,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
           <h2 className="text-xl font-bold">Items</h2>
           <div className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[560px] text-left text-sm">
-              <thead><tr className="border-b"><th className="p-3">Artwork</th><th className="p-3">Size</th><th className="p-3 text-right">Qty</th><th className="p-3 text-right">Unit</th><th className="p-3 text-right">Line Total</th></tr></thead>
+                            <thead><tr className="border-b"><th className="p-3">Artwork</th><th className="p-3">Size</th><th className="p-3">Frame</th><th className="p-3 text-right">Qty</th><th className="p-3 text-right">Unit</th><th className="p-3 text-right">Line Total</th></tr></thead>
               <tbody>
                 {order.items.map((item: CartItem, i: number) => (
                   <tr key={i} className="border-b last:border-0">
@@ -80,7 +80,8 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
                         </div>
                       </div>
                     </td>
-                    <td className="p-3">{item.size}</td>
+                                        <td className="p-3">{item.size}</td>
+                    <td className="p-3">{item.frame === "framed" ? "Framed" : "Unframed"}</td>
                     <td className="p-3 text-right">{item.quantity}</td>
                     <td className="p-3 text-right">{formatINR(item.price)}</td>
                     <td className="p-3 text-right font-semibold">{formatINR(item.price * item.quantity)}</td>
