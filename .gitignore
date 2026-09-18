@@ -9,3 +9,5 @@ out
 npm-debug.log*
 
 tsconfig.tsbuildinfo
+
+next-env.d.ts
