@@ -84,7 +84,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const refundAmount = parsed.data.amount;
     if (refundAmount <= 0 || refundAmount > Number(order.total)) return NextResponse.json({ error: "Refund amount must be greater than 0 and not exceed the order total." }, { status: 400 });
     const razorpay = getRazorpay();
-    const razorpayRefund = await razorpay.paymentRefunds.refund(order.paymentId, { amount: Math.round(refundAmount * 100), notes: { orderId: String(order._id) } });
+    const razorpayRefund = await razorpay.payments.refund(order.paymentId, { amount: Math.round(refundAmount * 100), notes: { orderId: String(order._id) } });
     const refundId = String(razorpayRefund?.id || `${order.paymentId}_refund`);
     const now = new Date();
     await db.collection("orders").updateOne(

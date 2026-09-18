@@ -6,7 +6,6 @@ import { useCartStore } from "@/store/cart-store";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { formatINR } from "@/lib/utils";
-import { SHIPPING_FEE, FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -16,7 +15,7 @@ declare global {
   }
 }
 
-export function CheckoutClient() {
+export function CheckoutClient({ freeShippingThreshold = 999, shippingFee = 99 }: { freeShippingThreshold?: number; shippingFee?: number }) {
   const items = useCartStore(s => s.items);
   const clear = useCartStore(s => s.clear);
   const router = useRouter();
@@ -28,7 +27,7 @@ export function CheckoutClient() {
   const [form, setForm] = useState({name:"",email:"",phone:"",address:"",city:"",state:"",postalCode:""});
   const subtotal = items.reduce((s,i)=>s+i.price*i.quantity,0);
   const discountedSubtotal = Math.max(0, subtotal - discount);
-  const shipping = discountedSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+  const shipping = discountedSubtotal >= freeShippingThreshold || discountedSubtotal===0 ? 0 : shippingFee;
   const total = discountedSubtotal + shipping;
 
   async function applyCoupon() {

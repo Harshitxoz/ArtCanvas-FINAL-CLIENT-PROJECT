@@ -4,13 +4,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { OrderStatusControl } from "@/components/admin/OrderStatusControl";
+import { ShippingForm } from "@/components/admin/ShippingForm";
+import { RefundForm } from "@/components/admin/RefundForm";
+import { NotesForm } from "@/components/admin/NotesForm";
 import { requireAdmin } from "@/lib/auth";
 import { getDb } from "@/lib/db";
-import { formatINR } from "@/lib/utils";
 import type { OrderDocument } from "@/models/order";
 import type { CartItem } from "@/types";
-import { useState } from "react";
-import { toast } from "sonner";
+import { formatINR } from "@/lib/utils";
 
 const STATUS_STYLES: Record<string, string> = {
   pending: "bg-black/5 text-black/60",
@@ -131,10 +132,10 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
       <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
         <h2 className="text-xl font-bold">Notes</h2>
         <p className="mt-1 text-sm text-black/55">Internal admin notes. These are never shown to the customer.</p>
-        <NotesForm orderId={orderId} initialNote={order.adminNotes || ""} />
+                        <NotesForm orderId={orderId} initialNote={order.adminShippingNotes || ""} />
       </section>
 
-      {order.refund && (
+            {order.refund && (
         <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
           <h2 className="text-xl font-bold">Refund Details</h2>
           <div className="mt-4 rounded-xl bg-orange-50 p-4 text-sm">
@@ -146,39 +147,20 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
           </div>
         </section>
       )}
+    </AdminShell>
+  );
+}
 
 type OrderHistoryData = { note: string; createdAt: string | Date }[];
 
-function OrderHistory({ data }: { data: OrderHistoryData }) {
-  const isNew = data.length === 0;
-  if (isNew) {
-    return (
-      <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-bold">Order History</h2>
-        <p className="mt-4 rounded-xl bg-[#eee9e1] p-4 text-sm text-black/55">
-          No admin actions have been recorded for this order yet.
-        </p>
-      </section>
-    );
-  }
+function OrderHistory({ orderId }: { orderId: string }) {
+  void orderId;
   return (
     <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
       <h2 className="text-xl font-bold">Order History</h2>
-      <ol className="mt-4 list-decimal list-inside space-y-2 text-sm">
-        {data.map((entry, index) => (
-          <li key={index} className="text-black/70">
-            <p className="font-semibold text-black">
-              {entry.note}
-              <span className="ml-2 text-black/40">
-                {new Date(entry.createdAt).toLocaleString("en-IN", {
-                  dateStyle: "short",
-                  timeStyle: "short",
-                })}
-              </span>
-            </p>
-          </li>
-        ))}
-      </ol>
+      <p className="mt-4 rounded-xl bg-[#eee9e1] p-4 text-sm text-black/55">
+        No admin actions have been recorded for this order yet.
+      </p>
     </section>
   );
 }

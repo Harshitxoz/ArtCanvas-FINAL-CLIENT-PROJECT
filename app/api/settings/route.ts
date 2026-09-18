@@ -1,51 +1,11 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
-
-type SettingsDocument = {
-  _id: string;
-  storeName: string;
-  tagline: string;
-  email: string;
-  phone: string;
-  whatsapp: string;
-  currency: string;
-  freeShippingThreshold: number;
-  shippingFee: number;
-  instagram: string;
-  address: string;
-  announcement: string;
-  headline: string;
-  subheadline: string;
-  heroImageUrl: string;
-  updatedAt?: Date;
-};
-
-const defaults: Omit<SettingsDocument, "_id"> = {
-  storeName: "ArtCanvas",
-  tagline: "Original art, made to be remembered",
-  email: "",
-  phone: "",
-  whatsapp: "",
-  currency: "INR",
-  freeShippingThreshold: 999,
-  shippingFee: 99,
-  instagram: "",
-  address: "",
-  announcement: "",
-  headline: "Bring Art Into Your Life",
-  subheadline:
-    "Discover original hand-painted canvases and premium prints that make your space feel like yours.",
-  heroImageUrl: "",
-};
+import { SettingsDocument, defaults, getSettings } from "@/lib/settings";
 
 export async function GET() {
   try {
-    const db = await getDb();
-    const d = await db
-      .collection<SettingsDocument>("settings")
-      .findOne({ _id: "store" });
-    return NextResponse.json({ ...defaults, ...(d || {}) });
+    return NextResponse.json(await getSettings());
   } catch {
     return NextResponse.json(defaults);
   }

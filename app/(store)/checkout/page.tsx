@@ -1,2 +1,6 @@
 import { CheckoutClient } from "@/components/checkout/CheckoutClient";
-export default function CheckoutPage(){return <CheckoutClient/>}
+import { getSettings } from "@/lib/settings";
+export default async function CheckoutPage(){
+  const settings = await getSettings();
+  return <CheckoutClient freeShippingThreshold={settings.freeShippingThreshold} shippingFee={settings.shippingFee}/>
+}

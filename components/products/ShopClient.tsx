@@ -42,7 +42,7 @@ export function ShopClient({ products, title, eyebrow, intro, basePath = "/shop"
   const hasFilters = fs.type || fs.category || fs.minPrice || fs.maxPrice || fs.frame || fs.availability || fs.sizes.length || params.get("q") ? 1 : 0;
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <section className="mx-auto max-w-7xl px-4 pt-12 pb-8 sm:px-6 sm:py-8 lg:px-8">
       {/* Header */}
       <div className="mb-8">
         <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#9a5d19]">{eyebrow ?? "The collection"}</p>
@@ -101,7 +101,7 @@ export function ShopClient({ products, title, eyebrow, intro, basePath = "/shop"
 
 export function ShopClientSkeleton() {
   return (
-    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <section className="mx-auto max-w-7xl px-4 pt-12 pb-8 sm:px-6 sm:py-8 lg:px-8">
       <div className="mb-8">
         <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#9a5d19]">The collection</p>
         <h1 className="mt-2 font-serif text-5xl font-bold">Shop Artwork</h1>

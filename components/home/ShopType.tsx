@@ -85,11 +85,6 @@ export function ShopType() {
             </Link>
           ))}
         </div>
-
-        <div className="mt-5 rounded-2xl border border-black/8 bg-white px-5 py-4 text-center text-sm text-black/55">
-          <span className="font-semibold text-black">Tip:</span> Add short 8–20 second MP4 loops to
-          <code className="mx-1 rounded bg-black/5 px-1.5 py-0.5">public/videos/</code> for the full cinematic experience.
-        </div>
       </div>
     </section>
   );

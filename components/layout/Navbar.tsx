@@ -5,20 +5,24 @@ import { Heart, Search, ShoppingBag, UserRound, Menu } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
 import { useState } from "react";
 
-export function Navbar() {
+export function Navbar({ announcement, freeShippingThreshold, storeName, tagline }: { announcement?: string; freeShippingThreshold?: number; storeName?: string; tagline?: string }) {
   const count = useCartStore(s => s.items.reduce((sum, i) => sum + i.quantity, 0));
   const [open, setOpen] = useState(false);
+  const name = storeName || "ArtCanvas";
+  const parts = name.match(/^(.*?)(Canvas)$/i);
+  const threshold = typeof freeShippingThreshold === "number" ? freeShippingThreshold : 999;
+  const banner = announcement?.trim() ? announcement.trim() : `Free shipping on orders above ₹${threshold} · Original art, made to last`;
   return (
     <>
       <div className="bg-[#17130f] px-4 py-2 text-center text-xs font-medium text-white">
-        Free shipping on orders above ₹999 · Original art, made to last
+        {banner}
       </div>
       <header className="sticky top-0 z-40 border-b border-black/5 bg-[#fffdf9]/95 backdrop-blur">
         <div className="mx-auto flex h-20 max-w-7xl items-center gap-5 px-4 sm:px-6 lg:px-8">
           <button className="lg:hidden" onClick={() => setOpen(!open)} aria-label="Open menu"><Menu size={22}/></button>
           <Link href="/" className="mr-auto shrink-0">
-            <div className="font-serif text-2xl font-bold tracking-tight">Art<span className="text-[#9a5d19]">Canvas</span></div>
-            <div className="text-[9px] font-semibold uppercase tracking-[0.35em] text-black/55">Art lives forever</div>
+            <div className="font-serif text-2xl font-bold tracking-tight">{parts ? <>{parts[1]}<span className="text-[#9a5d19]">{parts[2]}</span></> : name}</div>
+            <div className="text-[9px] font-semibold uppercase tracking-[0.35em] text-black/55">{tagline || "Art lives forever"}</div>
           </Link>
           <nav className="hidden items-center gap-7 text-sm font-medium lg:flex">
             <Link href="/">Home</Link><Link href="/shop">Shop</Link><Link href="/hand-painted">Hand-Painted</Link><Link href="/printed-canvas">Printed Canvas</Link><Link href="/categories">Categories</Link><Link href="/custom-artwork">Custom Art</Link><Link href="/about">About</Link>

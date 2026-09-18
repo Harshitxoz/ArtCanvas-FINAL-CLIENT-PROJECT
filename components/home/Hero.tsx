@@ -1,22 +1,25 @@
 ﻿import Image from "next/image";
 import Link from "next/link";
 
-export function Hero() {
+export function Hero({ headline, subheadline, heroImageUrl }: { headline?: string; subheadline?: string; heroImageUrl?: string }) {
+  const title = headline?.trim() ? headline.trim() : "Bring Art Into Your Life";
+  const subtitle = subheadline?.trim() ? subheadline.trim() : "Discover original hand-painted canvases and premium prints that make your space feel like yours.";
+  const src = heroImageUrl?.trim() ? heroImageUrl.trim() : "/images/hero.png";
   return (
     <section className="relative w-full overflow-hidden bg-[#e9dfd2]">
       <Image
-        src="/images/hero.png"
+        src={src}
         alt="Mountain artwork displayed in a warm modern interior"
         width={1376}
         height={768}
         priority
         sizes="100vw"
-        className="block h-auto w-full"
+        className="absolute inset-0 h-full w-full object-cover sm:relative sm:inset-auto sm:block sm:h-auto sm:w-full"
       />
 
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#eee5da]/72 via-[#eee5da]/22 to-transparent" />
 
-      <div className="absolute inset-0 flex items-center">
+      <div className="relative flex items-center py-12 sm:absolute sm:inset-0 sm:py-0">
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 lg:px-12">
           <div className="max-w-[520px]">
             <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.28em] text-[#a96218] sm:text-xs">
@@ -24,14 +27,11 @@ export function Hero() {
             </p>
 
             <h1 className="max-w-[520px] text-[44px] font-semibold leading-[0.96] tracking-[-0.045em] text-[#171411] sm:text-[54px] lg:text-[60px]">
-              Bring <span className="text-[#a96218]">Art</span> Into
-              <br />
-              Your Life
+              {title}
             </h1>
 
             <p className="mt-5 max-w-[500px] text-[15px] leading-7 text-[#2e2924]/78 sm:text-[17px] sm:leading-8">
-              Discover original hand-painted canvases and premium prints that
-              make your space feel like yours.
+              {subtitle}
             </p>
 
             <div className="mt-7 flex flex-wrap gap-3">
