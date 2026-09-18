@@ -72,7 +72,7 @@ export default async function PrintedPage({
         <div className="mx-auto grid max-w-7xl items-center overflow-hidden rounded-[2rem] bg-white lg:grid-cols-2">
           <div className="relative min-h-[280px] overflow-hidden rounded-[1.5rem] sm:min-h-[350px]">
             <Image
-              src="/images/hand-painted-materials.png"
+              src="/images/real-materials.png"
               alt="Close-up of premium canvas texture and rich printed colour in warm light"
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"

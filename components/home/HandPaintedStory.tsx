@@ -30,7 +30,7 @@ export function HandPaintedStory() {
         <div className="relative overflow-hidden rounded-[22px] shadow-[0_24px_60px_-24px_rgba(23,19,15,0.45)]">
           <div className="relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/5]">
             <Image
-              src="/images/hand-painted-studio.png"
+              src="/images/true-craftsmanship.png"
               alt="Artist's studio with an original hand-painted canvas resting on a wooden easel in warm natural light"
               fill
               sizes="(max-width: 1023px) 100vw, 45vw"
