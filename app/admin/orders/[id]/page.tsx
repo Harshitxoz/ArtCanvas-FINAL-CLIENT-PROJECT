@@ -51,7 +51,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <Link href="/admin/orders" className="text-sm font-semibold text-[#9a5d19]">← Back to orders</Link>
-          <h1 className="mt-1 text-4xl font-bold">Order #{orderId.slice(-8).toUpperCase()}</h1>
+          <h1 className="mt-1 break-words text-2xl font-bold sm:text-4xl">Order #{orderId.slice(-8).toUpperCase()}</h1>
           <p className="mt-1 text-sm text-black/55">Placed {placedAt}</p>
         </div>
         <div className="flex flex-wrap gap-2">

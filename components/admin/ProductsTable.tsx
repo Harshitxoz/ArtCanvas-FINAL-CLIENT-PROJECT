@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Search, Pencil, Archive, ArchiveRestore } from "lucide-react";
+import { Search, Pencil, Archive, ArchiveRestore, Trash2, Loader2, SlidersHorizontal, X, Plus } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { formatINR } from "@/lib/utils";
@@ -11,15 +11,32 @@ import { displayStatus, minPrice, totalStock } from "@/lib/product";
 import { PRODUCT_TYPES } from "@/lib/constants";
 import type { Product } from "@/types";
 
-export type ProductFilter = "all" | "draft" | "published" | "sold-out" | "archived";
+export type ProductFilter = "all" | "draft" | "published" | "sold-out" | "archived" | "low-stock" | "featured" | "bestseller" | "hand-painted" | "printed-canvas";
 
-const FILTERS: { value: ProductFilter; label: string }[] = [
+const STATUS_FILTERS: { value: ProductFilter; label: string }[] = [
   { value: "all", label: "All" },
   { value: "published", label: "Published" },
   { value: "draft", label: "Draft" },
+  { value: "archived", label: "Archived" },
   { value: "sold-out", label: "Sold Out" },
-  { value: "archived", label: "Archived" }
+  { value: "low-stock", label: "Low Stock" },
+  { value: "featured", label: "Featured" },
+  { value: "bestseller", label: "Bestseller" },
 ];
+
+const TYPE_FILTERS: { value: ProductFilter; label: string }[] = [
+  { value: "hand-painted", label: "Hand-Painted" },
+  { value: "printed-canvas", label: "Printed Canvas" },
+];
+
+const SORT_OPTIONS = [
+  { value: "newest", label: "Newest first" },
+  { value: "oldest", label: "Oldest first" },
+  { value: "price-low", label: "Price: Low to High" },
+  { value: "price-high", label: "Price: High to Low" },
+  { value: "stock-low", label: "Stock: Low to High" },
+  { value: "bestselling", label: "Bestsellers first" },
+] as const;
 
 export function ProductsTable({ products, initialFilter = "all", categories }: { products: Product[]; initialFilter?: ProductFilter; categories?: string[] }) {
   const router = useRouter();
@@ -27,19 +44,52 @@ export function ProductsTable({ products, initialFilter = "all", categories }: {
   const [artType, setArtType] = useState("");
   const [category, setCategory] = useState("");
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("newest");
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const rows = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return products.filter(p => {
+    let filtered = products.filter(p => {
       const st = displayStatus(p);
       if (filter !== "all" && st !== filter) return false;
       if (artType && p.artType !== artType) return false;
       if (category && p.category !== category) return false;
       if (q && !(`${p.title} ${p.sku || ""} ${(p.sizes || []).map(s => s.sku || "").join(" ")} ${p.category}`.toLowerCase().includes(q))) return false;
+      if ((filter as string) === "featured" && !p.featured) return false;
+      if ((filter as string) === "bestseller" && !p.bestseller) return false;
+      const stock = totalStock(p);
+      if ((filter as string) === "low-stock" && (stock <= 0 || stock > 5)) return false;
+      if (filter === "sold-out" && stock > 0) return false;
       return true;
     });
-  }, [products, filter, artType, category, search]);
+
+    // Sort
+    switch (sort) {
+      case "newest":
+        filtered.sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+        break;
+      case "oldest":
+        filtered.sort((a, b) => String(a.createdAt || "").localeCompare(String(b.createdAt || "")));
+        break;
+      case "price-low":
+        filtered.sort((a, b) => minPrice(a) - minPrice(b));
+        break;
+      case "price-high":
+        filtered.sort((a, b) => minPrice(b) - minPrice(a));
+        break;
+      case "stock-low":
+        filtered.sort((a, b) => totalStock(a) - totalStock(b));
+        break;
+      case "bestselling":
+        filtered.sort((a, b) => (b.bestseller === a.bestseller ? 0 : b.bestseller ? 1 : -1));
+        break;
+    }
+
+    return filtered;
+  }, [products, filter, artType, category, search, sort]);
 
   async function archive(id: string, title: string) {
     setBusyId(id);
@@ -70,6 +120,32 @@ export function ProductsTable({ products, initialFilter = "all", categories }: {
     }
   }
 
+  async function permanentDelete(id: string, title: string) {
+    setDeletingId(id);
+    try {
+      const r = await fetch("/api/products/" + id, { method: "DELETE" });
+      const d = await r.json().catch(() => ({}));
+
+      if (r.status === 409 && d.error === "has_orders") {
+        toast.error(d.message || "Cannot permanently delete: product has orders.");
+        setConfirmDeleteId(null);
+        setDeletePassword("");
+        return;
+      }
+
+      if (!r.ok) throw new Error(d.error || "Could not permanently delete artwork.");
+
+      toast.success(d.message || '"' + title + '" permanently deleted.');
+      setConfirmDeleteId(null);
+      setDeletePassword("");
+      router.refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not permanently delete artwork.");
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   const input = "rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#9a5d19]";
   const tab = (active: boolean) =>
     "rounded-full px-4 py-2 text-sm font-semibold transition " +
@@ -78,11 +154,23 @@ export function ProductsTable({ products, initialFilter = "all", categories }: {
   return (
     <div>
       <div className="flex flex-wrap gap-2" role="tablist" aria-label="Filter products by status">
-        {FILTERS.map(f => (
+        {STATUS_FILTERS.map((f: { value: ProductFilter; label: string }) => (
           <button key={f.value} role="tab" aria-selected={filter === f.value} onClick={() => setFilter(f.value)} className={tab(filter === f.value)}>
             {f.label} <span className={filter === f.value ? "text-white/60" : "text-black/40"}>({products.filter(p => f.value === "all" || displayStatus(p) === f.value).length})</span>
           </button>
         ))}
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-3">
+        <label className="text-sm font-semibold">Sort by</label>
+        <select aria-label="Sort products" className={input} value={sort} onChange={e => setSort(e.target.value)}>
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="stock-low">Stock: Low to High</option>
+          <option value="bestselling">Bestsellers first</option>
+        </select>
       </div>
 
       <div className="mt-4 grid gap-3 rounded-2xl bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3">

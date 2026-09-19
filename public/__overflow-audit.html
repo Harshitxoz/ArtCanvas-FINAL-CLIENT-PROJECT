@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>responsive audit</title></head>
+<body>
+<pre id="report">PROGRESS 0/0</pre>
+<script>
+/* TEMPORARY responsive audit harness — delete after verification.
+   Measures real horizontal overflow inside iframes of each viewport width. */
+(() => {
+  const params = new URLSearchParams(location.search);
+  const paths = params.getAll("p");
+  const widths = (params.get("w") || "320,375,412,768,820,1024,1280,1440").split(",").map(Number);
+  const report = document.getElementById("report");
+  const rows = [];
+  let done = 0;
+  const total = paths.length * widths.length;
+
+  function overflowOwner(el, win, doc) {
+    let p = el.parentElement;
+    while (p && p !== doc.documentElement) {
+      const cs = win.getComputedStyle(p);
+      if (cs.overflowX !== "visible" || cs.overflow !== "visible") return true;
+      p = p.parentElement;
+    }
+    return false;
+  }
+
+  function scan(frame, path, w) {
+    const doc = frame.contentDocument;
+    if (!doc || !doc.body) return { path, w, error: "no-doc" };
+    const win = frame.contentWindow;
+    const vw = doc.documentElement.clientWidth;
+    const bad = [];
+    doc.querySelectorAll("*").forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.width === 0 || r.height === 0) return;
+      if (r.right <= vw + 1 && r.left >= -1) return;
+      if (overflowOwner(el, win, doc)) return;
+      const cls = typeof el.className === "string" ? el.className.split(/\s+/).slice(0, 3).join(".") : "";
+      bad.push(`${el.tagName.toLowerCase()}${cls ? "." + cls : ""} L${Math.round(r.left)} R${Math.round(r.right)}`);
+    });
+    return {
+      path, w, vw,
+      docSW: doc.documentElement.scrollWidth,
+      bodySW: doc.body.scrollWidth,
+      overflow: doc.documentElement.scrollWidth - vw,
+      offenders: bad.slice(0, 6),
+      extra: Math.max(0, bad.length - 6)
+    };
+  }
+
+  function run(entry) {
+    return new Promise((resolve) => {
+      const frame = document.createElement("iframe");
+      frame.setAttribute("width", String(entry.w));
+      frame.style.cssText = `width:${entry.w}px;height:900px;border:0;position:absolute;left:-10000px;top:0`;
+      frame.src = entry.path;
+      const finish = () => {
+        setTimeout(() => {
+          try { rows.push(scan(frame, entry.path, entry.w)); }
+          catch (e) { rows.push({ path: entry.path, w: entry.w, error: String(e) }); }
+          frame.remove();
+          done += 1;
+          report.textContent = `PROGRESS ${done}/${total}\n` + rows.map(render).join("\n");
+          resolve();
+        }, 350);
+      };
+      frame.addEventListener("load", finish, { once: true });
+      document.body.appendChild(frame);
+    });
+  }
+
+  function render(r) {
+    if (r.error) return `! ${r.path} @${r.w} -> ${r.error}`;
+    const flag = r.overflow > 0 ? "OVERFLOW" : "ok";
+    return `[${flag}] ${r.path} @${r.w} vw=${r.vw} docScrollW=${r.docSW} bodyScrollW=${r.bodySW} delta=${r.overflow}` +
+      (r.offenders.length ? `\n      offenders: ${r.offenders.join(" | ")}${r.extra ? ` (+${r.extra} more)` : ""}` : "");
+  }
+
+  const queue = [];
+  for (const p of paths) for (const w of widths) queue.push({ path: p, w });
+
+  const authParams = new URLSearchParams(location.hash.slice(1));
+  const authEmail = authParams.get("email") || "";
+  const authPassword = authParams.get("password") || "";
+  const authReady = (async () => {
+    if (!authEmail || !authPassword) { report.dataset.auth = "no-auth"; return; }
+    try {
+      const res = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: authEmail, password: authPassword }) });
+      report.dataset.auth = res.ok ? "logged-in" : "login-failed-" + res.status;
+    } catch { report.dataset.auth = "login-error"; }
+  })();
+
+  const workers = Array.from({ length: 4 }, async () => {
+    await authReady;
+    while (queue.length) {
+      const next = queue.shift();
+      if (!next) break;
+      await run(next);
+    }
+  });
+
+  Promise.all(workers).then(() => {
+    report.textContent = "DONE\n" + render({ path: "", w: 0, vw: 0, docSW: 0, bodySW: 0, overflow: 0 }) + "\n";
+    report.textContent = "DONE total=" + total + " overflowCount=" + rows.filter((r) => r.overflow > 0).length + " auth=" + report.dataset.auth + "\n" +
+      rows.map(render).join("\n");
+    document.title = "AUDIT-DONE";
+  });
+})();</script>
+</body>
+</html>

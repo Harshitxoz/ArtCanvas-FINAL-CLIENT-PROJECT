@@ -21,7 +21,7 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
   return (
     <AdminShell>
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="font-serif text-4xl font-bold">{product.title}</h1>
+        <h1 className="break-words font-serif text-2xl font-bold sm:text-4xl">{product.title}</h1>
         <StatusBadge value={displayStatus(product)} />
       </div>
       <p className="mt-1 text-sm text-black/55">

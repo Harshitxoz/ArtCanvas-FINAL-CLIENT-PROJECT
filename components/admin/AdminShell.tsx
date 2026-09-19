@@ -4,8 +4,9 @@ import type { Route } from "next";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Package, PlusCircle, FileText, Eye, Tag, ShoppingCart,
-  Users, FolderOpen, Star, ClipboardList, Ticket, Home, BarChart3, Settings, Archive
+  Users, FolderOpen, Star, ClipboardList, Ticket, Home, BarChart3, Settings, Archive, Menu, X
 } from "lucide-react";
+import { useState } from "react";
 import type { ReactNode } from "react";
 
 const NAV: { section: string; links: { href: Route; label: string; icon: ReactNode }[] }[] = [
@@ -52,11 +53,27 @@ const NAV: { section: string; links: { href: Route; label: string; icon: ReactNo
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
   return (
-    <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[250px_1fr] lg:px-8">
-      <aside className="h-fit rounded-2xl bg-[#17130f] p-4 text-white lg:sticky lg:top-6">
-        <div className="mb-4 px-3 font-serif text-xl font-bold">ArtCanvas Admin</div>
-        <nav className="grid gap-4" aria-label="Admin navigation">
+    <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-start gap-4 px-3 py-6 sm:px-6 lg:grid-cols-[250px_minmax(0,1fr)] lg:gap-6 lg:px-8 lg:py-8">
+      <aside className="h-fit w-full min-w-0 rounded-2xl bg-[#17130f] p-4 text-white lg:sticky lg:top-6">
+        <div className="flex items-center justify-between gap-3 px-3 lg:mb-4">
+          <span className="font-serif text-xl font-bold">ArtCanvas Admin</span>
+          <button
+            type="button"
+            onClick={() => setOpen(v => !v)}
+            aria-expanded={open}
+            aria-controls="admin-nav"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/20 px-3 py-1.5 text-xs font-semibold text-white/80 transition hover:bg-white/10 hover:text-white lg:hidden"
+          >
+            {open ? <X size={14} /> : <Menu size={14} />} {open ? "Close menu" : "Menu"}
+          </button>
+        </div>
+        <nav
+          id="admin-nav"
+          className={`${open ? "mt-4 grid" : "hidden"} max-h-[65vh] gap-3 overflow-y-auto overscroll-contain lg:mt-0 lg:grid lg:max-h-none lg:gap-4 lg:overflow-visible`}
+          aria-label="Admin navigation"
+        >
           {NAV.map(group => (
             <div key={group.section}>
               <p className="mb-1 px-3 text-[11px] font-bold uppercase tracking-[0.18em] text-white/40">{group.section}</p>
@@ -69,6 +86,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
                       href={l.href}
                       aria-current={activeLink ? "page" : undefined}
                       className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition ${activeLink ? "bg-[#9a5d19] font-semibold text-white" : "text-white/70 hover:bg-white/10 hover:text-white"}`}
+                      onClick={() => setOpen(false)}
                     >
                       {l.icon}<span>{l.label}</span>
                     </Link>

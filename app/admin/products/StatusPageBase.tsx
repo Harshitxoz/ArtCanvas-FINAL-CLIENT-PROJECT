@@ -16,7 +16,7 @@ export async function StatusPageBase({ filter, title, subtitle }: { filter: Prod
   } catch {}
   return (
     <AdminShell>
-      <h1 className="font-serif text-4xl font-bold">{title}</h1>
+      <h1 className="font-serif text-3xl font-bold sm:text-4xl">{title}</h1>
       <p className="mt-1 text-sm text-black/55">{subtitle}</p>
       <div className="mt-6">
         <ProductsTable products={products} categories={categories} initialFilter={filter} />

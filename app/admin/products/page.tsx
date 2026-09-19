@@ -19,7 +19,7 @@ export default async function ProductsAdmin() {
     <AdminShell>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="font-serif text-4xl font-bold">Products</h1>
+          <h1 className="font-serif text-3xl font-bold sm:text-4xl">Products</h1>
           <p className="mt-1 text-sm text-black/55">Manage your artwork catalogue, pricing and stock.</p>
         </div>
         <Link href="/admin/products/new" className="rounded-full bg-[#9a5d19] px-5 py-3 text-sm font-semibold text-white hover:bg-[#7f4b12]">+ Add Artwork</Link>

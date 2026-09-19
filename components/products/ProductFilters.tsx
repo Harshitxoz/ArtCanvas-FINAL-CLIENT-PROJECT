@@ -98,7 +98,7 @@ export function FilterSidebar({ basePath = "/shop", lockedType, lockedCategory }
   const hasFilters = fs.type || fs.category || fs.minPrice || fs.maxPrice || fs.frame || fs.availability || fs.sizes.length ? 1 : 0;
 
   return (
-    <aside className="w-full max-w-none rounded-3xl bg-white p-6 shadow-sm lg:w-72 lg:flex-shrink-0">
+    <aside className="w-full max-w-none rounded-3xl bg-white p-5 shadow-sm sm:p-6 lg:w-72 lg:flex-shrink-0">
       <div className="flex items-center justify-between">
         <h2 className="font-serif text-xl font-bold">Filters</h2>
         {hasFilters ? <button onClick={clearAll} className="text-xs font-semibold text-[#9a5d19] underline">Clear all</button> : null}

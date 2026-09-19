@@ -86,7 +86,7 @@ export function HandPaintedFeatures() {
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Mobile: horizontal snap carousel — one card at a time */}
         <div
-          className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 md:hidden"
+          className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6 md:hidden"
           role="region"
           aria-label="How we work — swipe for more cards"
         >

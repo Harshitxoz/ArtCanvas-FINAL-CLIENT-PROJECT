@@ -42,14 +42,14 @@ export function ShopClient({ products, title, eyebrow, intro, basePath = "/shop"
   const hasFilters = fs.type || fs.category || fs.minPrice || fs.maxPrice || fs.frame || fs.availability || fs.sizes.length || params.get("q") ? 1 : 0;
 
   return (
-    <section className="mx-auto max-w-7xl px-4 pt-12 pb-8 sm:px-6 sm:py-8 lg:px-8">
+    <section className="mx-auto max-w-7xl px-4 pt-12 pb-8 sm:px-6 sm:pt-14 sm:pb-10 lg:px-8">
       {/* Header */}
       <div className="mb-8">
         <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#9a5d19]">{eyebrow ?? "The collection"}</p>
         {headingLevel === "h2" ? (
-          <h2 className="mt-2 font-serif text-4xl font-bold tracking-tight sm:text-5xl">{title ?? "Shop Artwork"}</h2>
+          <h2 className="mt-2 font-serif text-3xl font-bold tracking-tight sm:text-5xl">{title ?? "Shop Artwork"}</h2>
         ) : (
-          <h1 className="mt-2 font-serif text-5xl font-bold tracking-tight">{title ?? "Shop Artwork"}</h1>
+          <h1 className="mt-2 font-serif text-3xl font-bold tracking-tight sm:text-5xl">{title ?? "Shop Artwork"}</h1>
         )}
         {intro ? <p className="mt-3 max-w-2xl leading-7 text-black/60">{intro}</p> : null}
         <p className="mt-3 text-black/60" role="status" aria-live="polite">{products.length} {products.length === 1 ? "piece" : "pieces"} available</p>
@@ -85,13 +85,13 @@ export function ShopClient({ products, title, eyebrow, intro, basePath = "/shop"
       <ActiveFilters basePath={basePath} lockedType={lockedType} lockedCategory={lockedCategory} />
 
       {/* Main layout: sidebar + grid */}
-      <div className="mt-6 grid gap-8 lg:grid-cols-[250px_1fr]">
+      <div className="mt-6 grid gap-8 lg:grid-cols-[250px_minmax(0,1fr)]">
         {/* Desktop sidebar */}
         <aside className="hidden lg:block">
           <FilterSidebar basePath={basePath} lockedType={lockedType} lockedCategory={lockedCategory} />
         </aside>
         {/* Product grid */}
-        <main>
+        <main className="min-w-0">
           <ProductGrid products={products} />
         </main>
       </div>
@@ -101,12 +101,12 @@ export function ShopClient({ products, title, eyebrow, intro, basePath = "/shop"
 
 export function ShopClientSkeleton() {
   return (
-    <section className="mx-auto max-w-7xl px-4 pt-12 pb-8 sm:px-6 sm:py-8 lg:px-8">
+    <section className="mx-auto max-w-7xl px-4 pt-12 pb-8 sm:px-6 sm:pt-14 sm:pb-10 lg:px-8">
       <div className="mb-8">
         <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#9a5d19]">The collection</p>
-        <h1 className="mt-2 font-serif text-5xl font-bold">Shop Artwork</h1>
+        <h1 className="mt-2 font-serif text-3xl font-bold sm:text-5xl">Shop Artwork</h1>
       </div>
-      <div className="grid gap-8 lg:grid-cols-[250px_1fr]">
+      <div className="grid gap-8 lg:grid-cols-[250px_minmax(0,1fr)]">
         <div className="hidden lg:block"><div className="h-96 w-full animate-pulse rounded-3xl bg-black/5" /></div>
         <ProductGridSkeleton count={12} />
       </div>

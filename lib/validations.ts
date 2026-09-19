@@ -41,7 +41,17 @@ export const productSizeSchema = z.object({
   sku: z.string().max(60).optional()
 });
 
-const imageValue = z.string().url().or(z.string().startsWith("/"));
+/** Accepts either a plain URL string (legacy) or an object with url + optional publicId (new). */
+const imageInput = z.union([
+  z.string().url(),
+  z.object({
+    url: z.string().url(),
+    publicId: z.string().optional()
+  }).passthrough()
+]).transform(v => {
+  if (typeof v === "string") return { url: v };
+  return { url: v.url, publicId: v.publicId };
+});
 
 export const productSchema = z.object({
   title: z.string().min(2).max(120),
@@ -53,10 +63,10 @@ export const productSchema = z.object({
   medium: z.string().max(120).optional().default(""),
   canvasMaterial: z.string().max(120).optional().default(""),
   orientation: z.enum(["landscape", "portrait", "square"]).optional().default("landscape"),
-  images: z.array(imageValue).min(1).max(8),
-  roomPreview: imageValue.optional().or(z.literal("")),
-  closeUp: imageValue.optional().or(z.literal("")),
-  authenticityImage: imageValue.optional().or(z.literal("")),
+  images: z.array(imageInput).min(1).max(8),
+  roomPreview: z.string().url().or(z.string().startsWith("/")).optional().or(z.literal("")),
+  closeUp: z.string().url().or(z.string().startsWith("/")).optional().or(z.literal("")),
+  authenticityImage: z.string().url().or(z.string().startsWith("/")).optional().or(z.literal("")),
   sizes: z.array(productSizeSchema).min(1).max(10),
   sku: z.string().max(60).optional().default(""),
   weight: z.number().nonnegative().max(500).optional().default(0),
@@ -69,7 +79,9 @@ export const productSchema = z.object({
   bestseller: z.boolean().default(false),
   newArrival: z.boolean().default(false),
   active: z.boolean().default(true),
-  status: z.enum(["draft", "published", "archived"]).default("published")
+  status: z.enum(["draft", "published", "archived"]).default("published"),
+  seoTitle: z.string().max(70).optional().default(""),
+  seoDescription: z.string().max(170).optional().default("")
 });
 
 
@@ -217,6 +229,6 @@ export const customOrderStatusSchema = z.object({
 export const homepageSettingsSchema = z.object({
   headline: z.string().min(3).max(120),
   subheadline: z.string().max(240).default(""),
-  heroImageUrl: imageValue.optional().or(z.literal("")),
+  heroImageUrl: z.string().url().or(z.string().startsWith("/")).optional().or(z.literal("")),
   announcement: z.string().max(160).default("")
 });

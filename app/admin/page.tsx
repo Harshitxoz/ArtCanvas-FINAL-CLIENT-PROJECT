@@ -92,13 +92,13 @@ export default async function AdminDashboard() {
   const d = await loadDashboard();
   return (
     <AdminShell>
-    <div className="grid gap-6">
+    <div className="grid min-w-0 grid-cols-1 gap-6">
       <header>
-        <h1 className="font-serif text-4xl font-bold">Dashboard</h1>
+        <h1 className="break-words font-serif text-3xl font-bold sm:text-4xl">Dashboard</h1>
         <p className="mt-1 text-sm text-black/55">Store overview for {new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
       </header>
 
-      <section aria-label="Key metrics" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section aria-label="Key metrics" className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard accent icon={<IndianRupee size={18} />} label="Total sales" value={formatINR(d.revenue)} hint="All paid orders" />
         <StatCard icon={<TrendingUp size={18} />} label="Today's sales" value={formatINR(d.todaySales)} hint="Paid since midnight" />
         <StatCard icon={<ShoppingCart size={18} />} label="Total orders" value={String(d.totalOrders)} />
@@ -108,8 +108,8 @@ export default async function AdminDashboard() {
         <StatCard icon={<AlertTriangle size={18} />} label="Low stock" value={String(d.lowStock.length)} hint="3 or fewer pieces left" />
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2" aria-label="Top selling and low stock">
-        <div className="rounded-3xl bg-white p-6 shadow-sm">
+      <section className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-2" aria-label="Top selling and low stock">
+        <div className="min-w-0 rounded-3xl bg-white p-6 shadow-sm">
           <h2 className="font-serif text-2xl font-bold">Top-selling artworks</h2>
           {d.topSelling.length === 0
             ? <p className="mt-4 rounded-2xl bg-[#eee9e1] p-5 text-sm text-black/55">No paid orders yet — once artworks sell, your bestsellers will appear here.</p>
@@ -128,7 +128,7 @@ export default async function AdminDashboard() {
                 ))}
               </ol>}
         </div>
-        <div className="rounded-3xl bg-white p-6 shadow-sm">
+        <div className="min-w-0 rounded-3xl bg-white p-6 shadow-sm">
           <h2 className="font-serif text-2xl font-bold">Low-stock artworks</h2>
           {d.lowStock.length === 0
             ? <p className="mt-4 rounded-2xl bg-[#eee9e1] p-5 text-sm text-black/55">All published artworks have healthy stock levels.</p>
@@ -146,14 +146,14 @@ export default async function AdminDashboard() {
         </div>
       </section>
 
-      <section className="rounded-3xl bg-white p-6 shadow-sm" aria-label="Recent orders">
+      <section className="min-w-0 rounded-3xl bg-white p-6 shadow-sm" aria-label="Recent orders">
         <div className="flex items-center justify-between gap-3">
           <h2 className="font-serif text-2xl font-bold">Recent orders</h2>
           <Link href="/admin/orders" className="text-sm font-semibold text-[#9a5d19] hover:underline">View all →</Link>
         </div>
         {d.recentOrders.length === 0
           ? <p className="mt-4 rounded-2xl bg-[#eee9e1] p-5 text-sm text-black/55">No orders yet.</p>
-          : <div className="mt-4 overflow-x-auto">
+          : <div className="mt-4 min-w-0 overflow-x-auto">
               <table className="w-full min-w-[560px] text-left text-sm">
                 <thead><tr className="border-b text-xs uppercase tracking-wider text-black/45">
                   <th className="pb-3 pr-4">Order</th><th className="pb-3 pr-4">Customer</th><th className="pb-3 pr-4">Total</th><th className="pb-3 pr-4">Status</th><th className="pb-3">Date</th>

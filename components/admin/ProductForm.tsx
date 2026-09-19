@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { ImageUploader } from "./ImageUploader";
 import { slugify } from "@/lib/utils";
-import type { ArtType, Product, ProductSize, ProductStatus } from "@/types";
+import type { ArtType, Product, ProductSize, ProductStatus, ImageAsset } from "@/types";
 
 interface SizeRow extends ProductSize {
   compareAtStr: string;
@@ -28,11 +28,15 @@ function toRow(s: ProductSize): SizeRow {
   };
 }
 
-const FIELD = "mt-1 w-full rounded-xl border border-black/10 bg-white p-3 text-sm outline-none focus:border-[#9a5d19]";
-const LABEL = "block text-sm font-semibold";
-const SECTION = "rounded-3xl bg-white p-6 shadow-sm";
-const TITLE = "font-serif text-2xl font-bold";
+const FIELD = "mt-1 w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#9a5d19] focus:ring-1 focus:ring-[#9a5d19]/20";
+const FIELD_ERROR = "mt-1 w-full rounded-xl border border-red-300 bg-red-50 px-3.5 py-2.5 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/20";
+const LABEL = "block text-sm font-semibold text-black";
+const LABEL_REQUIRED = "block text-sm font-semibold text-black";
+const SECTION = "rounded-2xl bg-white p-5 shadow-sm border border-black/5";
+const SECTION_HEADING = "font-serif text-xl font-bold text-black";
 const HINT = "mt-1 text-xs text-black/50";
+const HELPER = "mt-1 text-xs text-black/60";
+const ERROR = "mt-1 text-xs text-red-600 font-medium";
 
 export function ProductForm({ product, categories }: { product?: Product; categories?: string[] }) {
   const router = useRouter();
@@ -46,7 +50,7 @@ export function ProductForm({ product, categories }: { product?: Product; catego
   const [medium, setMedium] = useState(product?.medium || "");
   const [canvasMaterial, setCanvasMaterial] = useState(product?.canvasMaterial || "");
   const [orientation, setOrientation] = useState<"landscape" | "portrait" | "square">(product?.orientation || "landscape");
-  const [images, setImages] = useState<string[]>(product?.images || []);
+  const [images, setImages] = useState<ImageAsset[]>(product?.imageAssets?.length ? product.imageAssets : (product?.images || []).map(url => ({ url })));
   const [roomPreview, setRoomPreview] = useState(product?.roomPreview || "");
   const [closeUp, setCloseUp] = useState(product?.closeUp || "");
   const [authenticityImage, setAuthenticityImage] = useState(product?.authenticityImage || "");
@@ -62,6 +66,8 @@ export function ProductForm({ product, categories }: { product?: Product; catego
   const [bestseller, setBestseller] = useState(product?.bestseller ?? false);
   const [newArrival, setNewArrival] = useState(product?.newArrival ?? false);
   const [status, setStatus] = useState<ProductStatus>(product?.status || (product?.active === false ? "draft" : "published"));
+  const [seoTitle, setSeoTitle] = useState(product?.seoTitle || "");
+  const [seoDescription, setSeoDescription] = useState(product?.seoDescription || "");
   const [loading, setLoading] = useState(false);
 
   const discountPreview = useMemo(() => sizes.map(s => {
@@ -108,11 +114,12 @@ export function ProductForm({ product, categories }: { product?: Product; catego
       const payload = {
         title: title.trim(), slug: slug.trim(), artType, category, artist: artist.trim(),
         description: description.trim(), medium: medium.trim(), canvasMaterial: canvasMaterial.trim(), orientation,
-        images, roomPreview, closeUp, authenticityImage, sizes: parsedSizes,
+        images: images.map(img => img.url), roomPreview, closeUp, authenticityImage, sizes: parsedSizes,
         sku: sku.trim(), weight: weight ? Number(weight) : 0, deliveryTime: deliveryTime.trim(),
         frameAvailable, framedPrice: framedPrice ? Number(framedPrice) : 0, unframedPrice: unframedPrice ? Number(unframedPrice) : 0,
         care: care.trim(), featured, bestseller, newArrival,
-        status: finalStatus, active: finalStatus === "published"
+        status: finalStatus, active: finalStatus === "published",
+        seoTitle: seoTitle.trim(), seoDescription: seoDescription.trim()
       };
       const url = product?._id ? "/api/products/" + product._id : "/api/products";
       const r = await fetch(url, { method: product?._id ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -129,50 +136,94 @@ export function ProductForm({ product, categories }: { product?: Product; catego
   }
 
   return (
-    <form onSubmit={e => submit(e)} className="grid gap-6">
-      <section className={SECTION} aria-label="Artwork basics">
-        <h2 className={TITLE}>Artwork basics</h2>
+    <form onSubmit={e => submit(e)} className="grid gap-5">
+      <section className={SECTION} aria-label="Basic information">
+        <h2 className={SECTION_HEADING}>Basic Information</h2>
+        <p className={HINT}>The core details of your artwork. Title and art type are required.</p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <label className={LABEL}>Artwork title<Input required value={title} onChange={e => onTitle(e.target.value)} placeholder="e.g. Mountain Sunset" /></label>
           <div>
-            <label className={LABEL} htmlFor="artwork-slug">Slug</label>
-            <Input id="artwork-slug" required value={slug} onChange={e => { setSlug(slugify(e.target.value)); setSlugTouched(true); }} placeholder="mountain-sunset" />
-            <p className={HINT}>Lowercase letters, numbers and dashes. Used in the product URL.</p>
+            <label className={LABEL + " mb-1.5"}>Artwork title <span className="text-red-500">*</span></label>
+            <input className={FIELD} required value={title} onChange={e => onTitle(e.target.value)} placeholder="e.g. Mountain Sunset" aria-label="Artwork title" />
+            <p className={HELPER}>The main name of your artwork as it will appear on the store.</p>
           </div>
-          <label className={LABEL}>Art type
-            <select className={FIELD} value={artType} onChange={e => setArtType(e.target.value as ArtType)}>
+          <div>
+            <label className={LABEL + " mb-1.5"}>Slug</label>
+            <input className={FIELD} required value={slug} onChange={e => { setSlug(slugify(e.target.value)); setSlugTouched(true); }} placeholder="mountain-sunset" aria-label="Product slug" />
+            <p className={HELPER}>Lowercase letters, numbers and dashes. Used in the product URL.</p>
+          </div>
+          <div>
+            <label className={LABEL + " mb-1.5"}>Art type <span className="text-red-500">*</span></label>
+            <select className={FIELD} value={artType} onChange={e => setArtType(e.target.value as ArtType)} aria-label="Art type">
               <option value="hand-painted">Hand-Painted (original)</option>
               <option value="printed-canvas">Printed Canvas</option>
             </select>
-          </label>
-          <div>
-            <label className={LABEL} htmlFor="artwork-category">Category</label>
-            {categories?.length
-              ? <select id="artwork-category" className={FIELD} value={category} onChange={e => setCategory(e.target.value)}>{categories.map(c => <option key={c} value={c}>{c.replace("-", " ")}</option>)}</select>
-              : <Input id="artwork-category" value={category} onChange={e => setCategory(e.target.value)} />}
           </div>
-          <label className={LABEL}>Artist name<Input value={artist} onChange={e => setArtist(e.target.value)} placeholder="e.g. ArtCanvas Studio" /></label>
-          <label className={LABEL}>Orientation
-            <select className={FIELD} value={orientation} onChange={e => setOrientation(e.target.value as "landscape" | "portrait" | "square")}>
+          <div>
+            <label className={LABEL + " mb-1.5"}>Category <span className="text-red-500">*</span></label>
+            {categories?.length
+              ? <select className={FIELD} value={category} onChange={e => setCategory(e.target.value)} aria-label="Category">{categories.map(c => <option key={c} value={c}>{c.replace("-", " ").replace(/^\w/, c => c.toUpperCase())}</option>)}</select>
+              : <input className={FIELD} value={category} onChange={e => setCategory(e.target.value)} placeholder="e.g. nature" aria-label="Category" />}
+            <p className={HELPER}>The category this artwork belongs to.</p>
+          </div>
+          <div>
+            <label className={LABEL + " mb-1.5"}>Artist name</label>
+            <input className={FIELD} value={artist} onChange={e => setArtist(e.target.value)} placeholder="e.g. ArtCanvas Studio" aria-label="Artist name" />
+          </div>
+          <div>
+            <label className={LABEL + " mb-1.5"}>Orientation</label>
+            <select className={FIELD} value={orientation} onChange={e => setOrientation(e.target.value as "landscape" | "portrait" | "square")} aria-label="Orientation">
               <option value="landscape">Landscape</option>
               <option value="portrait">Portrait</option>
               <option value="square">Square</option>
             </select>
-          </label>
+          </div>
+          <div>
+            <label className={LABEL + " mb-1.5"}>SKU</label>
+            <input className={FIELD} value={sku} onChange={e => setSku(e.target.value)} placeholder="e.g. AC-MS-001" aria-label="Product SKU" />
+            <p className={HELPER}>Optional. Internal tracking and inventory code.</p>
+          </div>
         </div>
-        <label className={LABEL + " mt-4"}>Description
-          <textarea required minLength={10} className={FIELD + " min-h-32 leading-6"} value={description} onChange={e => setDescription(e.target.value)} placeholder="Story, mood, colours and ideal rooms…" />
-        </label>
+        <label className={LABEL + " mt-4"}>Description <span className="text-red-500">*</span></label>
+        <textarea required minLength={10} className={FIELD + " min-h-32 leading-6"} value={description} onChange={e => setDescription(e.target.value)} placeholder="Story, mood, colours and ideal rooms…" aria-label="Description" />
+        <p className={HELPER}>{description.length}/5000 characters · Describe the artwork's story and mood.</p>
+
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <label className={LABEL}>Medium<Input value={medium} onChange={e => setMedium(e.target.value)} placeholder="e.g. Acrylic on canvas" /></label>
-          <label className={LABEL}>Canvas material<Input value={canvasMaterial} onChange={e => setCanvasMaterial(e.target.value)} placeholder="e.g. 400 GSM cotton canvas" /></label>
+          <div>
+            <label className={LABEL + " mb-1.5"}>Medium</label>
+            <input className={FIELD} value={medium} onChange={e => setMedium(e.target.value)} placeholder="e.g. Acrylic on canvas" aria-label="Medium" />
+          </div>
+          <div>
+            <label className={LABEL + " mb-1.5"}>Surface / Material</label>
+            <input className={FIELD} value={canvasMaterial} onChange={e => setCanvasMaterial(e.target.value)} placeholder="e.g. 400 GSM cotton canvas" aria-label="Surface or material" />
+          </div>
         </div>
       </section>
 
-      <section className={SECTION} aria-label="Images">
-        <h2 className={TITLE}>Images</h2>
+      <section className={SECTION} aria-label="Artwork images">
+        <h2 className={SECTION_HEADING}>Artwork Images</h2>
         <div className="mt-4 grid gap-6">
-          <ImageUploader images={images} onChange={setImages} label="Artwork images" max={8} />
+          <ImageUploader
+             images={images}
+             onChange={setImages}
+             label="Artwork images"
+             max={8}
+             disabled={loading}
+             onSaveImageAction={async (action, index) => {
+               if (!product?._id) return;
+               const r = await fetch("/api/products/" + product._id, {
+                 method: "PATCH",
+                 headers: { "Content-Type": "application/json" },
+                 body: JSON.stringify({ imageAction: action, imageIndex: index })
+               });
+               const d = await r.json().catch(() => ({}));
+               if (!r.ok) throw new Error(d.error || "Could not update image.");
+               const refreshR = await fetch("/api/products/" + product._id);
+               if (refreshR.ok) {
+                 const updated = await refreshR.json();
+                 setImages(updated.imageAssets?.length ? updated.imageAssets : (updated.images || []).map((url: string) => ({ url })));
+               }
+             }}
+           />
           <div className="grid gap-4 sm:grid-cols-3">
             <SingleImage label="Room preview image" value={roomPreview} onChange={setRoomPreview} />
             <SingleImage label="Close-up image" value={closeUp} onChange={setCloseUp} />
@@ -183,7 +234,7 @@ export function ProductForm({ product, categories }: { product?: Product; catego
 
       <section className={SECTION} aria-label="Sizes and pricing">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className={TITLE}>Sizes and pricing</h2>
+          <h2 className={SECTION_HEADING}>Sizes and pricing</h2>
           <button type="button" onClick={() => setSizes(p => [...p, { label: "24 x 36 in", width: 24, height: 36, price: 4999, compareAtStr: "", priceStr: "4999", stockStr: "5", stock: 5, sku: "" }])} className="inline-flex items-center gap-1.5 rounded-full border border-[#9a5d19] px-4 py-2 text-sm font-semibold text-[#9a5d19] hover:bg-[#9a5d19]/5"><Plus size={15} /> Add size</button>
         </div>
         <p className={HINT}>Each size has its own price, compare-at price, stock and SKU.</p>
@@ -191,7 +242,7 @@ export function ProductForm({ product, categories }: { product?: Product; catego
           {sizes.map((s, i) => (
             <fieldset key={i} className="rounded-2xl border border-black/10 p-4">
               <legend className="px-2 text-sm font-bold">Size {i + 1}</legend>
-              <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+              <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-6">
                 <label className={LABEL}>Label<Input value={s.label} onChange={e => updateSize(i, { label: e.target.value })} /></label>
                 <label className={LABEL}>Width (in)<Input type="number" min={1} value={s.width} onChange={e => updateSize(i, { width: Number(e.target.value) })} /></label>
                 <label className={LABEL}>Height (in)<Input type="number" min={1} value={s.height} onChange={e => updateSize(i, { height: Number(e.target.value) })} /></label>
@@ -217,7 +268,7 @@ export function ProductForm({ product, categories }: { product?: Product; catego
 
 
       <section className={SECTION} aria-label="Inventory and delivery">
-        <h2 className={TITLE}>Inventory and delivery</h2>
+        <h2 className={SECTION_HEADING}>Inventory and delivery</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-3">
           <label className={LABEL}>Base SKU<Input value={sku} onChange={e => setSku(e.target.value)} placeholder="e.g. AC-MS-001" /></label>
           <label className={LABEL}>Weight (kg)<Input type="number" min={0} step={0.1} value={weight} onChange={e => setWeight(e.target.value)} /></label>
@@ -238,7 +289,7 @@ export function ProductForm({ product, categories }: { product?: Product; catego
       </section>
 
       <section className={SECTION} aria-label="Visibility">
-        <h2 className={TITLE}>Visibility</h2>
+        <h2 className={SECTION_HEADING}>Publish</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <label className={LABEL}>Status
             <select className={FIELD} value={status} onChange={e => setStatus(e.target.value as ProductStatus)}>
@@ -279,7 +330,7 @@ function SingleImage({ label, value, onChange }: { label: string; value: string;
       const r = await fetch("/api/upload", { method: "POST", body: fd });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || "Upload failed");
-      onChange(d.secure_url);
+      onChange(d.url);
       toast.success(label + " uploaded");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Upload failed");

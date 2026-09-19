@@ -47,7 +47,7 @@ export default async function HomepageAdmin() {
 
   return (
     <AdminShell>
-      <h1 className="font-serif text-4xl font-bold">Homepage</h1>
+      <h1 className="font-serif text-3xl font-bold sm:text-4xl">Homepage</h1>
       <p className="mt-1 text-sm text-black/55">
         These sections power the live customer-facing homepage. Use the checkboxes on each artwork to add or remove it from a section.
       </p>

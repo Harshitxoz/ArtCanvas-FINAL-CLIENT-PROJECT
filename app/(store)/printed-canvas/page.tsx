@@ -38,7 +38,7 @@ export default async function PrintedPage({
       <PrintedCanvasHero />
 
       <section className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
             ["Museum-Grade Printing", "Sharp detail and rich colour for a gallery-style finish."],
             ["Multiple Sizes", "Choose the dimensions that fit your wall and your room."],
@@ -85,7 +85,7 @@ export default async function PrintedPage({
           </div>
           <div className="p-8 sm:p-10 lg:p-14">
             <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#9a5d19]">Made for modern spaces</p>
-            <h2 className="mt-3 font-serif text-4xl leading-tight sm:text-5xl">See how premium canvas changes a room.</h2>
+            <h2 className="mt-3 font-serif text-3xl leading-tight sm:text-5xl">See how premium canvas changes a room.</h2>
             <p className="mt-5 text-sm leading-7 text-black/60">
               Sharp detail, rich colour and a clean gallery-style finish — printed on quality canvas and ready to hang in the rooms where life happens.
             </p>

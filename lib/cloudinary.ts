@@ -16,13 +16,35 @@ function configure() {
   configured = true;
 }
 
-export async function uploadBuffer(buffer: Buffer, folder = "artcanvas") {
+export interface UploadResult {
+  url: string;
+  publicId: string;
+}
+
+export async function uploadBuffer(buffer: Buffer, folder = "artcanvas"): Promise<UploadResult> {
   configure();
-  return new Promise<{ secure_url: string }>((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream({ folder, resource_type: "image" }, (error, result) => {
-      if (error || !result) return reject(error || new Error("Upload failed"));
-      resolve({ secure_url: result.secure_url });
-    });
+  return new Promise<UploadResult>((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder, resource_type: "image" },
+      (error, result) => {
+        if (error || !result) return reject(error || new Error("Upload failed"));
+        resolve({
+          url: result.secure_url,
+          publicId: result.public_id
+        });
+      }
+    );
     stream.end(buffer);
+  });
+}
+
+export async function deleteResource(publicId: string): Promise<void> {
+  configure();
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.destroy(publicId, (error, result) => {
+      if (error) return reject(error || new Error("Failed to delete resource"));
+      if (result?.result !== "ok") return reject(new Error("Cloudinary delete failed"));
+      resolve();
+    });
   });
 }

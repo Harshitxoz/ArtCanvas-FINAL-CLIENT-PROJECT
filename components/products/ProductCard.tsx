@@ -41,15 +41,15 @@ export function ProductCard({ product }: { product: DisplayProduct }) {
         </Link>
         {product.status === "archived" && <StatusBadge value="archived" />}
         {stock <= 0 && <div className="absolute inset-0 grid place-items-center rounded-2xl bg-black/30"><span className="rounded-full bg-red-600 px-4 py-1.5 text-xs font-bold text-white">SOLD OUT</span></div>}
-        <div className="absolute left-3 top-3">
-          <Badge>{product.artType === "hand-painted" ? "Original Hand-Painted" : "Printed Canvas"}</Badge>
+        <div className="absolute left-3 top-3 max-w-[calc(100%-3.75rem)]">
+          <Badge className="truncate px-2.5 py-1 text-[10px] xs:text-xs sm:px-3">{product.artType === "hand-painted" ? "Original Hand-Painted" : "Printed Canvas"}</Badge>
         </div>
-        <div className="absolute right-3 top-3 flex flex-col gap-1.5 opacity-0 transition group-hover:opacity-100">
-          <button onClick={() => toggle(id)} className="grid h-10 w-10 place-items-center rounded-full bg-white/90 shadow" aria-label="Toggle wishlist"><Heart size={18} fill={has ? "currentColor" : "none"} className={has ? "text-[#9a5d19]" : ""} /></button>
+        <div className="absolute right-3 top-3 flex flex-col gap-1.5 opacity-100 transition lg:opacity-0 lg:group-hover:opacity-100 lg:focus-within:opacity-100">
+          <button onClick={() => toggle(id)} className="grid h-9 w-9 place-items-center rounded-full bg-white/90 shadow xs:h-10 xs:w-10" aria-label="Toggle wishlist"><Heart size={18} fill={has ? "currentColor" : "none"} className={has ? "text-[#9a5d19]" : ""} /></button>
         </div>
       </div>
       <div className="pt-4">
-        <Link href={(("/products/" + product.slug) as never)}><h3 className="font-serif text-xl font-bold">{product.title}</h3></Link>
+        <Link href={(("/products/" + product.slug) as never)}><h3 className="break-words font-serif text-lg font-bold sm:text-xl">{product.title}</h3></Link>
         <p className="mt-1 text-sm capitalize text-black/50">{product.category.replace("-", " ")}</p>
         <div className="mt-2 font-semibold">{sizes.length > 1 ? "From " : ""}{formatINR(size ? size.price : min)}</div>
         {discount > 0 && compareAt ? <p className="mt-1 text-xs text-black/50"><s>{formatINR(compareAt)}</s> <span className="font-semibold text-[#1f7a4d]">{discount}% off</span></p> : null}

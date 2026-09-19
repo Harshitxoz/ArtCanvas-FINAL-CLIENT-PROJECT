@@ -57,7 +57,7 @@ export function PrintedCanvasRooms() {
       </p>
       <h2
         id="shop-by-space"
-        className="mt-2 font-serif text-4xl font-bold tracking-tight sm:text-5xl"
+        className="mt-2 font-serif text-3xl font-bold tracking-tight sm:text-5xl"
       >
         Find Art for Your Space
       </h2>
@@ -65,7 +65,11 @@ export function PrintedCanvasRooms() {
         Explore canvas prints styled for the rooms where life happens.
       </p>
 
-      <div className="mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0 lg:grid-cols-4 lg:gap-5">
+      <div
+        className="mt-8 -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4 lg:gap-5"
+        role="region"
+        aria-label="Art styled by room — swipe for more"
+      >
         {ROOMS.map((room) => (
           <a
             key={room.title}

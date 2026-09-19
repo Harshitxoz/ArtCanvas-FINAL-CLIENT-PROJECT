@@ -32,7 +32,7 @@ export function ShopType() {
             <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#9a5d19]">
               Choose your canvas
             </p>
-            <h2 className="mt-2 max-w-xl font-serif text-4xl font-medium sm:text-5xl">
+            <h2 className="mt-2 max-w-xl font-serif text-3xl font-medium sm:text-5xl">
               Two ways to bring art home.
             </h2>
           </div>
@@ -47,7 +47,7 @@ export function ShopType() {
             <Link
               href={card.href}
               key={card.href}
-              className="group relative min-h-[500px] overflow-hidden rounded-[2rem] bg-[#17130f] text-white"
+              className="group relative min-h-[420px] overflow-hidden rounded-[2rem] bg-[#17130f] text-white sm:min-h-[500px]"
             >
               <div className="absolute inset-0">
                 <video
@@ -76,7 +76,7 @@ export function ShopType() {
               </div>
 
               <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
-                <h3 className="font-serif text-4xl font-medium">{card.title}</h3>
+                <h3 className="font-serif text-3xl font-medium sm:text-4xl">{card.title}</h3>
                 <p className="mt-3 max-w-lg text-sm leading-6 text-white/75 sm:text-base">{card.text}</p>
                 <span className="mt-6 inline-flex items-center gap-2 font-semibold">
                   Explore collection <ArrowUpRight size={17} />

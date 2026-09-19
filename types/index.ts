@@ -11,6 +11,12 @@ export type OrderStatus =
   | "refunded";
 export type ProductStatus = "draft" | "published" | "archived";
 
+/** A single artwork image with optional Cloudinary public_id for future deletion support. */
+export interface ImageAsset {
+  url: string;
+  publicId?: string;
+}
+
 export interface Category {
   _id?: string;
   name: string;
@@ -41,7 +47,8 @@ export interface Product {
   medium?: string;
   canvasMaterial?: string;
   orientation?: "landscape" | "portrait" | "square";
-  images: string[];
+  images: string[]; // Legacy: array of URLs. New uploads use imageAssets.
+  imageAssets?: ImageAsset[]; // Structured image data with optional public_id.
   roomPreview?: string;
   closeUp?: string;
   authenticityImage?: string;
@@ -58,6 +65,8 @@ export interface Product {
   newArrival?: boolean;
   active: boolean;
   status?: ProductStatus;
+  seoTitle?: string;
+  seoDescription?: string;
   createdAt?: string;
   updatedAt?: string;
 }

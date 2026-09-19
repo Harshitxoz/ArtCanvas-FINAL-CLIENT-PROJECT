@@ -1,0 +1,94 @@
+
+> artcanvas-store@1.0.0 build
+> next build
+
+▲ Next.js 16.3.4 (Turbopack)
+- Environments: .env.local
+✓ Running next.config.ts took 113ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 5.3s
+  Running TypeScript ...
+  Finished TypeScript in 9.1s ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/41) ...
+  Generating static pages using 11 workers (10/41) 
+  Generating static pages using 11 workers (20/41) 
+  Generating static pages using 11 workers (30/41) 
+✓ Generating static pages using 11 workers (41/41) in 3.1s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /about
+├ ƒ /account
+├ ƒ /account/orders
+├ ƒ /admin
+├ ƒ /admin/analytics
+├ ƒ /admin/categories
+├ ƒ /admin/coupons
+├ ƒ /admin/custom-orders
+├ ƒ /admin/customers
+├ ƒ /admin/homepage
+├ ƒ /admin/orders
+├ ƒ /admin/orders/[id]
+├ ƒ /admin/products
+├ ƒ /admin/products/[id]
+├ ƒ /admin/products/archived
+├ ƒ /admin/products/drafts
+├ ƒ /admin/products/new
+├ ƒ /admin/products/published
+├ ƒ /admin/products/sold-out
+├ ƒ /admin/reviews
+├ ƒ /admin/settings
+├ ƒ /api/auth/login
+├ ƒ /api/auth/logout
+├ ƒ /api/auth/me
+├ ƒ /api/auth/register
+├ ƒ /api/categories
+├ ƒ /api/categories/[id]
+├ ƒ /api/coupons
+├ ƒ /api/coupons/[id]
+├ ƒ /api/coupons/validate
+├ ƒ /api/custom-orders
+├ ƒ /api/custom-orders/[id]
+├ ƒ /api/orders
+├ ƒ /api/orders/[id]
+├ ƒ /api/payment/create-order
+├ ƒ /api/payment/verify
+├ ƒ /api/products
+├ ƒ /api/products/[id]
+├ ƒ /api/reviews
+├ ƒ /api/reviews/[id]
+├ ƒ /api/reviews/admin
+├ ƒ /api/seed
+├ ƒ /api/settings
+├ ƒ /api/upload
+├ ○ /cart
+├ ○ /categories
+├ ƒ /categories/[slug]
+├ ○ /checkout
+├ ○ /contact
+├ ○ /custom-artwork
+├ ƒ /hand-painted
+├ ○ /login
+├ ƒ /printed-canvas
+├ ○ /privacy
+├ ƒ /products/[slug]
+├ ○ /register
+├ ○ /returns
+├ ○ /robots.txt
+├ ƒ /search
+├ ○ /shipping
+├ ƒ /shop
+├ ○ /sitemap.xml
+├ ○ /terms
+└ ○ /wishlist
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

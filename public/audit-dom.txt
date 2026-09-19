@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>responsive audit</title></head>
+<body>
+<pre id="report">PROGRESS 255/255
+[ok] / @320 vw=305 docScrollW=305 bodyScrollW=305 delta=0
+[ok] / @360 vw=345 docScrollW=345 bodyScrollW=345 delta=0
+[ok] / @375 vw=360 docScrollW=360 bodyScrollW=360 delta=0
+[ok] / @390 vw=375 docScrollW=375 bodyScrollW=375 delta=0
+[ok] / @412 vw=397 docScrollW=397 bodyScrollW=397 delta=0
+[ok] / @480 vw=465 docScrollW=465 bodyScrollW=465 delta=0
+[ok] / @768 vw=753 docScrollW=753 bodyScrollW=753 delta=0
+[ok] / @600 vw=585 docScrollW=585 bodyScrollW=585 delta=0
+[ok] / @820 vw=805 docScrollW=805 bodyScrollW=805 delta=0
+[ok] / @912 vw=897 docScrollW=897 bodyScrollW=897 delta=0
+[ok] / @1024 vw=1009 docScrollW=1009 bodyScrollW=1009 delta=0
+[ok] / @1280 vw=1265 docScrollW=1265 bodyScrollW=1265 delta=0
+[ok] / @1366 vw=1351 docScrollW=1351 bodyScrollW=1351 delta=0
+[ok] /shop @320 vw=305 docScrollW=305 bodyScrollW=305 delta=0
+[ok] / @1440 vw=1425 docScrollW=1425 bodyScrollW=1425 delta=0
+[ok] / @1600 vw=1585 docScrollW=1585 bodyScrollW=1585 delta=0
+[ok] /shop @360 vw=345 docScrollW=345 bodyScrollW=345 delta=0
+[ok] /shop @375 vw=360 docScrollW=360 bodyScrollW=360 delta=0
+[ok] /shop @390 vw=375 docScrollW=375 bodyScrollW=375 delta=0
+[ok] /shop @412 vw=397 docScrollW=397 bodyScrollW=397 delta=0
+[ok] /shop @480 vw=465 docScrollW=465 bodyScrollW=465 delta=0
+[ok] /shop @600 vw=585 docScrollW=585 bodyScrollW=585 delta=0
+[ok] /shop @768 vw=753 docScrollW=753 bodyScrollW=753 delta=0
+[ok] /shop @820 vw=805 docScrollW=805 bodyScrollW=805 delta=0
+[ok] /shop @912 vw=897 docScrollW=897 bodyScrollW=897 delta=0
+[ok] /shop @1024 vw=1009 docScrollW=1009 bodyScrollW=1009 delta=0
+[ok] /shop @1280 vw=1265 docScrollW=1265 bodyScrollW=1265 delta=0
+[ok] /shop @1366 vw=1351 docScrollW=1351 bodyScrollW=1351 delta=0
+[ok] /shop @1440 vw=1425 docScrollW=1425 bodyScrollW=1425 delta=0
+[ok] /shop @1600 vw=1585 docScrollW=1585 bodyScrollW=1585 delta=0
+[ok] /hand-painted @320 vw=305 docScrollW=305 bodyScrollW=305 delta=0
+[ok] /hand-painted @360 vw=345 docScrollW=345 bodyScrollW=345 delta=0
+[ok] /hand-painted @375 vw=360 docScrollW=360 bodyScrollW=360 delta=0
+[ok] /hand-painted @390 vw=375 docScrollW=375 bodyScrollW=375 delta=0
+[ok] /hand-painted @412 vw=397 docScrollW=397 bodyScrollW=397 delta=0
+[ok] /hand-painted @480 vw=465 docScrollW=465 bodyScrollW=465 delta=0
+[ok] /hand-painted @600 vw=585 docScrollW=585 bodyScrollW=585 delta=0
+[ok] /hand-painted @768 vw=753 docScrollW=753 bodyScrollW=753 delta=0
+[ok] /hand-painted @820 vw=805 docScrollW=805 bodyScrollW=805 delta=0
+[ok] /hand-painted @912 vw=897 docScrollW=897 bodyScrollW=897 delta=0
+[ok] /hand-painted @1024 vw=1009 docScrollW=1009 bodyScrollW=1009 delta=0
+[ok] /hand-painted @1280 vw=1265 docScrollW=1265 bodyScrollW=1265 delta=0
+[ok] /hand-painted @1366 vw=1351 docScrollW=1351 bodyScrollW=1351 delta=0
+[ok] /hand-painted @1440 vw=1425 docScrollW=1425 bodyScrollW=1425 delta=0
+[ok] /hand-painted @1600 vw=1585 docScrollW=1585 bodyScrollW=1585 delta=0
+[ok] /printed-canvas @320 vw=305 docScrollW=305 bodyScrollW=305 delta=0
+[ok] /printed-canvas @375 vw=360 docScrollW=360 bodyScrollW=360 delta=0
+[ok] /printed-canvas @360 vw=345 docScrollW=345 bodyScrollW=345 delta=0
+[ok] /printed-canvas @390 vw=375 docScrollW=375 bodyScrollW=375 delta=0
+[ok] /printed-canvas @412 vw=397 docScrollW=397 bodyScrollW=397 delta=0
+[ok] /printed-canvas @480 vw=465 docScrollW=465 bodyScrollW=465 delta=0
+[ok] /printed-canvas @600 vw=585 docScrollW=585 bodyScrollW=585 delta=0
+[ok] /printed-canvas @912 vw=897 docScrollW=897 bodyScrollW=897 delta=0
+[ok] /printed-canvas @768 vw=753 docScrollW=753 bodyScrollW=753 delta=0
+[ok] /printed-canvas @1024 vw=1009 docScrollW=1009 bodyScrollW=1009 delta=0
+[ok] /printed-canvas @820 vw=805 docScrollW=805 bodyScrollW=805 delta=0
+[ok] /printed-canvas @1280 vw=1265 docScrollW=1265 bodyScrollW=1265 delta=0
+[ok] /printed-canvas @1366 vw=1351 docScrollW=1351 bodyScrollW=1351 delta=0
+[ok] /printed-canvas @1440 vw=1425 docScrollW=1425 bodyScrollW=1425 delta=0
+[ok] /printed-canvas @1600 vw=1585 docScrollW=1585 bodyScrollW=1585 delta=0
+[ok] /categories @320 vw=305 docScrollW=305 bodyScrollW=305 delta=0
+[ok] /categories @360 vw=345 docScrollW=345 bodyScrollW=345 delta=0
+[ok] /categories @375 vw=360 docScrollW=360 bodyScrollW=360 delta=0
+[ok] /categories @390 vw=375 docScrollW=375 bodyScrollW=375 delta=0
+[ok] /categories @412 vw=397 docScrollW=397 bodyScrollW=397 delta=0
+[ok] /categories @480 vw=465 docScrollW=465 bodyScrollW=465 delta=0
+[ok] /categories @600 vw=585 docScrollW=585 bodyScrollW=585 delta=0
+[ok] /categories @768 vw=753 docScrollW=753 bodyScrollW=753 delta=0
+[ok] /categories @820 vw=805 docScrollW=805 bodyScrollW=805 delta=0
+[ok] /categories @912 vw=897 docScrollW=897 bodyScrollW=897 delta=0
+[ok] /categories @1024 vw=1009 docScrollW=1009 bodyScrollW=1009 delta=0
+[ok] /categories @1280 vw=1265 docScrollW=1265 bodyScrollW=1265 delta=0
+[ok] /categories/nature @320 vw=305 docScrollW=305 bodyScrollW=305 delta=0
+[ok] /categories @1366 vw=1351 docScrollW=1351 bodyScrollW=1351 delta=0
+[ok] /categories @1440 vw=1425 docScrollW=1425 bodyScrollW=1425 delta=0
+[ok] /categories @1600 vw=1585 docScrollW=1585 bodyScrollW=1585 delta=0
+[ok] /categories/nature @390 vw=375 docScrollW=375 bodyScrollW=375 delta=0
+[ok] /categories/nature @360 vw=345 docScrollW=345 bodyScrollW=345 delta=0
+[ok] /categories/nature @375 vw=360 docScrollW=360 bodyScrollW=360 delta=0
+[ok] /categories/nature @412 vw=397 docScrollW=397 bodyScrollW=397 delta=0
+[ok] /categories/nature @480 vw=465 docScrollW=465 bodyScrollW=465 delta=0
+[ok] /categories/nature @600 vw=585 docScrollW=585 bodyScrollW=585 delta=0
+[ok] /categories/nature @768 vw=753 docScrollW=753 bodyScrollW=753 delta=0
+[ok] /categories/nature @820 vw=805 docScrollW=805 bodyScrollW=805 delta=0
+[ok] /categories/nature @912 vw=897 docScrollW=897 bodyScrollW=897 delta=0
+[ok] /categories/nature @1024 vw=1009 docScrollW=1009 bodyScrollW=1009 delta=0
+[ok] /categories/nature @1280 vw=1265 docScrollW=1265 bodyScrollW=1265 delta=0
+[ok] /categories/nature @1366 vw=1351 docScrollW=1351 bodyScrollW=1351 delta=0
+[ok] /categories/nature @1440 vw=1425 docScrollW=1425 bodyScrollW=1425 delta=0
+[ok] /search?q=mountain @320 vw=305 docScrollW=305 bodyScrollW=305 delta=0
+[ok] /search?q=mountain @360 vw=345 docScrollW=345 bodyScrollW=345 delta=0
+[ok] /categories/nature @1600 vw=1585 docScrollW=1585 bodyScrollW=1585 delta=0
+[ok] /search?q=mountain @375 vw=360 docScrollW=360 bodyScrollW=360 delta=0
+[ok] /search?q=mountain @390 vw=375 docScrollW=375 bodyScrollW=375 delta=0
+[ok] /search?q=mountain @412 vw=397 docScrollW=397 bodyScrollW=397 delta=0
+[ok] /search?q=mountain @480 vw=465 docScrollW=465 bodyScrollW=465 delta=0
+[ok] /search?q=mountain @600 vw=585 docScrollW=585 bodyScrollW=585 delta=0
+[ok] /search?q=mountain @768 vw=753 docScrollW=753 bodyScrollW=753 delta=0
+[ok] /search?q=mountain @820 vw=805 docScrollW=805 bodyScrollW=805 delta=0
+[ok] /search?q=mountain @912 vw=897 docScrollW=897 bodyScrollW=897 delta=0
+[ok] /search?q=mountain @1024 vw=1009 docScrollW=1009 bodyScrollW=1009 delta=0
+[ok] /search?q=mountain @1280 vw=1265 docScrollW=1265 bodyScrollW=1265 delta=0
+[ok] /search?q=mountain @1366 vw=1351 docScrollW=1351 bodyScrollW=1351 delta=0
+[ok] /search?q=mountain @1440 vw=1425 docScrollW=1425 bodyScrollW=1425 delta=0
+[ok] /cart @320 vw=305 docScrollW=305 bodyScrollW=305 delta=0
+[ok] /cart @360 vw=345 docScrollW=345 bodyScrollW=345 delta=0
+[ok] /search?q=mountain @1600 vw=1585 docScrollW=1585 bodyScrollW=1585 delta=0
+[ok] /cart @375 vw=360 docScrollW=360 bodyScrollW=360 delta=0
+[ok] /cart @390 vw=375 docScrollW=375 bodyScrollW=375 delta=0
+[ok] /cart @412 vw=397 docScrollW=397 bodyScrollW=397 delta=0
+[ok] /cart @480 vw=465 docScrollW=465 bodyScrollW=465 delta=0
+[ok] /cart @600 vw=585 docScrollW=585 bodyScrollW=585 delta=0
+[ok] /cart @768 vw=753 docScrollW=753 bodyScrollW=753 delta=0
+[ok] /cart @820 vw=805 docScrollW=805 bodyScrollW=805 delta=0
+[ok] /cart @912 vw=897 docScrollW=897 bodyScrollW=897 delta=0
+[ok] /cart @1024 vw=1009 docScrollW=1009 bodyScrollW=1009 delta=0
+[ok] /cart @1280 vw=1265 docScrollW=1265 bodyScrollW=1265 delta=0
+[ok] /cart @1366 vw=1351 docScrollW=1351 bodyScrollW=1351 delta=0
+[ok] /cart @1440 vw=1425 docScrollW=1425 bodyScrollW=1425 delta=0
+[ok] /cart @1600 vw=1585 docScrollW=1585 bodyScrollW=1585 delta=0
+[ok] /checkout @320 vw=305 docScrollW=305 bodyScrollW=305 delta=0
+[ok] /checkout @360 vw=345 docScrollW=345 bodyScrollW=345 delta=0
+[ok] /checkout @375 vw=360 docScrollW=360 bodyScrollW=360 delta=0
+[ok] /checkout @390 vw=375 docScrollW=375 bodyScrollW=375 delta=0
+[ok] /checkout @412 vw=397 docScrollW=397 bodyScrollW=397 delta=0
+[ok] /checkout @480 vw=465 docScrollW=465 bodyScrollW=465 delta=0
+[ok] /checkout @600 vw=585 docScrollW=585 bodyScrollW=585 delta=0
+[ok] /checkout @768 vw=753 docScrollW=753 bodyScrollW=753 delta=0
+[ok] /checkout @820 vw=805 docScrollW=805 bodyScrollW=805 delta=0
+[ok] /checkout @912 vw=897 docScrollW=897 bodyScrollW=897 delta=0
+[ok] /checkout @1024 vw=1009 docScrollW=1009 bodyScrollW=1009 delta=0
+[ok] /checkout @1280 vw=1265 docScrollW=1265 bodyScrollW=1265 delta=0
+[ok] /checkout @1366 vw=1351 docScrollW=1351 bodyScrollW=1351 delta=0
+[ok] /checkout @1440 vw=1425 docScrollW=1425 bodyScrollW=1425 delta=0
+[ok] /checkout @1600 vw=1585 docScrollW=1585 bodyScrollW=1585 delta=0
+[ok] /about @320 vw=305 docScrollW=305 bodyScrollW=305 delta=0
+[ok] /about @360 vw=345 docScrollW=345 bodyScrollW=345 delta=0
+[ok] /about @375 vw=360 docScrollW=360 bodyScrollW=360 delta=0
+[ok] /about @390 vw=375 docScrollW=375 bodyScrollW=375 delta=0
+[ok] /about @412 vw=397 docScrollW=397 bodyScrollW=397 delta=0
+[ok] /about @480 vw=465 docScrollW=465 bodyScrollW=465 delta=0
+[ok] /about @600 vw=585 docScrollW=585 bodyScrollW=585 delta=0
+[ok] /about @768 vw=753 docScrollW=753 bodyScrollW=753 delta=0
+[ok] /about @820 vw=805 docScrollW=805 bodyScrollW=805 delta=0
+[ok] /about @912 vw=897 docScrollW=897 bodyScrollW=897 delta=0
+[ok] /about @1024 vw=1009 docScrollW=1009 bodyScrollW=1009 delta=0
+[ok] /about @1280 vw=1265 docScrollW=1265 bodyScrollW=1265 delta=0
+[ok] /about @1366 vw=1351 docScrollW=1351 bodyScrollW=1351 delta=0
+[ok] /about @1440 vw=1425 docScrollW=1425 bodyScrollW=1425 delta=0
+[ok] /about @1600 vw=1585 docScrollW=1585 bodyScrollW=1585 delta=0
+[ok] /contact @320 vw=305 docScrollW=305 bodyScrollW=305 delta=0
+[ok] /contact @360 vw=345 docScrollW=345 bodyScrollW=345 delta=0
+[ok] /contact @375 vw=360 docScrollW=360 bodyScrollW=360 delta=0
+[ok] /contact @390 vw=375 docScrollW=375 bodyScrollW=375 delta=0
+[ok] /contact @412 vw=397 docScrollW=397 bodyScrollW=397 delta=0
+[ok] /contact @480 vw=465 docScrollW=465 bodyScrollW=465 delta=0
+[ok] /contact @600 vw=585 docScrollW=585 bodyScrollW=585 delta=0
+[ok] /contact @768 vw=753 docScrollW=753 bodyScrollW=753 delta=0
+[ok] /contact @820 vw=805 docScrollW=805 bodyScrollW=805 delta=0
+[ok] /contact @912 vw=897 docScrollW=897 bodyScrollW=897 delta=0
+[ok] /contact @1024 vw=1009 docScrollW=1009 bodyScrollW=1009 delta=0
+[ok] /contact @1280 vw=1265 docScrollW=1265 bodyScrollW=1265 delta=0
+[ok] /contact @1366 vw=1351 docScrollW=1351 bodyScrollW=1351 delta=0
+[ok] /contact @1440 vw=1425 docScrollW=1425 bodyScrollW=1425 delta=0
+[ok] /contact @1600 vw=1585 docScrollW=1585 bodyScrollW=1585 delta=0
+[ok] /login @320 vw=305 docScrollW=305 bodyScrollW=305 delta=0
+[ok] /login @360 vw=345 docScrollW=345 bodyScrollW=345 delta=0
+[ok] /login @375 vw=360 docScrollW=360 bodyScrollW=360 delta=0
+[ok] /login @390 vw=375 docScrollW=375 bodyScrollW=375 delta=0
+[ok] /login @412 vw=397 docScrollW=397 bodyScrollW=397 delta=0
+[ok] /login @480 vw=465 docScrollW=465 bodyScrollW=465 delta=0
+[ok] /login @600 vw=585 docScrollW=585 bodyScrollW=585 delta=0
+[ok] /login @768 vw=753 docScrollW=753 bodyScrollW=753 delta=0
+[ok] /login @820 vw=805 docScrollW=805 bodyScrollW=805 delta=0
+[ok] /login @912 vw=897 docScrollW=897 bodyScrollW=897 delta=0
+[ok] /login @1024 vw=1009 docScrollW=1009 bodyScrollW=1009 delta=0
+[ok] /login @1280 vw=1265 docScrollW=1265 bodyScrollW=1265 delta=0
+[ok] /login @1366 vw=1351 docScrollW=1351 bodyScrollW=1351 delta=0
+[ok] /login @1440 vw=1425 docScrollW=1425 bodyScrollW=1425 delta=0
+[ok] /login @1600 vw=1585 docScrollW=1585 bodyScrollW=1585 delta=0
+[ok] /register @320 vw=305 docScrollW=305 bodyScrollW=305 delta=0
+[ok] /register @360 vw=345 docScrollW=345 bodyScrollW=345 delta=0
+[ok] /register @375 vw=360 docScrollW=360 bodyScrollW=360 delta=0
+[ok] /register @390 vw=375 docScrollW=375 bodyScrollW=375 delta=0
+[ok] /register @412 vw=397 docScrollW=397 bodyScrollW=397 delta=0
+[ok] /register @480 vw=465 docScrollW=465 bodyScrollW=465 delta=0
+[ok] /register @600 vw=585 docScrollW=585 bodyScrollW=585 delta=0
+[ok] /register @768 vw=753 docScrollW=753 bodyScrollW=753 delta=0
+[ok] /register @820 vw=805 docScrollW=805 bodyScrollW=805 delta=0
+[ok] /register @912 vw=897 docScrollW=897 bodyScrollW=897 delta=0
+[ok] /register @1024 vw=1009 docScrollW=1009 bodyScrollW=1009 delta=0
+[ok] /register @1280 vw=1265 docScrollW=1265 bodyScrollW=1265 delta=0
+[ok] /register @1366 vw=1351 docScrollW=1351 bodyScrollW=1351 delta=0
+[ok] /register @1440 vw=1425 docScrollW=1425 bodyScrollW=1425 delta=0
+[ok] /register @1600 vw=1585 docScrollW=1585 bodyScrollW=1585 delta=0
+[ok] /wishlist @320 vw=305 docScrollW=305 bodyScrollW=305 delta=0
+[ok] /wishlist @360 vw=345 docScrollW=345 bodyScrollW=345 delta=0
+[ok] /wishlist @375 vw=360 docScrollW=360 bodyScrollW=360 delta=0
+[ok] /wishlist @390 vw=375 docScrollW=375 bodyScrollW=375 delta=0
+[ok] /wishlist @412 vw=397 docScrollW=397 bodyScrollW=397 delta=0
+[ok] /wishlist @480 vw=465 docScrollW=465 bodyScrollW=465 delta=0
+[ok] /wishlist @600 vw=585 docScrollW=585 bodyScrollW=585 delta=0
+[ok] /wishlist @768 vw=753 docScrollW=753 bodyScrollW=753 delta=0
+[ok] /wishlist @820 vw=805 docScrollW=805 bodyScrollW=805 delta=0
+[ok] /wishlist @912 vw=897 docScrollW=897 bodyScrollW=897 delta=0
+[ok] /wishlist @1024 vw=1009 docScrollW=1009 bodyScrollW=1009 delta=0
+[ok] /wishlist @1280 vw=1265 docScrollW=1265 bodyScrollW=1265 delta=0
+[ok] /wishlist @1366 vw=1351 docScrollW=1351 bodyScrollW=1351 delta=0
+[ok] /wishlist @1440 vw=1425 docScrollW=1425 bodyScrollW=1425 delta=0
+[ok] /wishlist @1600 vw=1585 docScrollW=1585 bodyScrollW=1585 delta=0
+[ok] /account @320 vw=305 docScrollW=305 bodyScrollW=305 delta=0
+[ok] /account @360 vw=345 docScrollW=345 bodyScrollW=345 delta=0
+[ok] /account @375 vw=360 docScrollW=360 bodyScrollW=360 delta=0
+[ok] /account @390 vw=375 docScrollW=375 bodyScrollW=375 delta=0
+[ok] /account @412 vw=397 docScrollW=397 bodyScrollW=397 delta=0
+[ok] /account @480 vw=465 docScrollW=465 bodyScrollW=465 delta=0
+[ok] /account @600 vw=585 docScrollW=585 bodyScrollW=585 delta=0
+[ok] /account @768 vw=753 docScrollW=753 bodyScrollW=753 delta=0
+[ok] /account @820 vw=805 docScrollW=805 bodyScrollW=805 delta=0
+[ok] /account @912 vw=897 docScrollW=897 bodyScrollW=897 delta=0
+[ok] /account @1024 vw=1009 docScrollW=1009 bodyScrollW=1009 delta=0
+[ok] /account @1280 vw=1265 docScrollW=1265 bodyScrollW=1265 delta=0
+[ok] /account @1366 vw=1351 docScrollW=1351 bodyScrollW=1351 delta=0
+[ok] /account @1440 vw=1425 docScrollW=1425 bodyScrollW=1425 delta=0
+[ok] /account @1600 vw=1585 docScrollW=1585 bodyScrollW=1585 delta=0
+[ok] /admin @320 vw=305 docScrollW=305 bodyScrollW=305 delta=0
+[ok] /admin @360 vw=345 docScrollW=345 bodyScrollW=345 delta=0
+[ok] /admin @375 vw=360 docScrollW=360 bodyScrollW=360 delta=0
+[ok] /admin @390 vw=375 docScrollW=375 bodyScrollW=375 delta=0
+[ok] /admin @412 vw=397 docScrollW=397 bodyScrollW=397 delta=0
+[ok] /admin @480 vw=465 docScrollW=465 bodyScrollW=465 delta=0
+[ok] /admin @600 vw=585 docScrollW=585 bodyScrollW=585 delta=0
+[ok] /admin @768 vw=753 docScrollW=753 bodyScrollW=753 delta=0
+[ok] /admin @820 vw=805 docScrollW=805 bodyScrollW=805 delta=0
+[ok] /admin @912 vw=897 docScrollW=897 bodyScrollW=897 delta=0
+[ok] /admin @1024 vw=1009 docScrollW=1009 bodyScrollW=1009 delta=0
+[ok] /admin @1280 vw=1265 docScrollW=1265 bodyScrollW=1265 delta=0
+[ok] /admin @1366 vw=1351 docScrollW=1351 bodyScrollW=1351 delta=0
+[ok] /admin @1440 vw=1425 docScrollW=1425 bodyScrollW=1425 delta=0
+[ok] /admin @1600 vw=1585 docScrollW=1585 bodyScrollW=1585 delta=0
+[OVERFLOW] /__overflow-control.html @320 vw=320 docScrollW=2000 bodyScrollW=2000 delta=1680
+      offenders: div L0 R2000 | div L0 R900
+[OVERFLOW] /__overflow-control.html @360 vw=360 docScrollW=2000 bodyScrollW=2000 delta=1640
+      offenders: div L0 R2000 | div L0 R900
+[OVERFLOW] /__overflow-control.html @375 vw=375 docScrollW=2000 bodyScrollW=2000 delta=1625
+      offenders: div L0 R2000 | div L0 R900
+[OVERFLOW] /__overflow-control.html @390 vw=390 docScrollW=2000 bodyScrollW=2000 delta=1610
+      offenders: div L0 R2000 | div L0 R900
+[OVERFLOW] /__overflow-control.html @412 vw=412 docScrollW=2000 bodyScrollW=2000 delta=1588
+      offenders: div L0 R2000 | div L0 R900
+[OVERFLOW] /__overflow-control.html @480 vw=480 docScrollW=2000 bodyScrollW=2000 delta=1520
+      offenders: div L0 R2000 | div L0 R900
+[OVERFLOW] /__overflow-control.html @600 vw=600 docScrollW=2000 bodyScrollW=2000 delta=1400
+      offenders: div L0 R2000 | div L0 R900
+[OVERFLOW] /__overflow-control.html @768 vw=768 docScrollW=2000 bodyScrollW=2000 delta=1232
+      offenders: div L0 R2000 | div L0 R900
+[OVERFLOW] /__overflow-control.html @820 vw=820 docScrollW=2000 bodyScrollW=2000 delta=1180
+      offenders: div L0 R2000 | div L0 R900
+[OVERFLOW] /__overflow-control.html @912 vw=912 docScrollW=2000 bodyScrollW=2000 delta=1088
+      offenders: div L0 R2000
+[OVERFLOW] /__overflow-control.html @1024 vw=1024 docScrollW=2000 bodyScrollW=2000 delta=976
+      offenders: div L0 R2000
+[OVERFLOW] /__overflow-control.html @1280 vw=1280 docScrollW=2000 bodyScrollW=2000 delta=720
+      offenders: div L0 R2000
+[OVERFLOW] /__overflow-control.html @1366 vw=1366 docScrollW=2000 bodyScrollW=2000 delta=634
+      offenders: div L0 R2000
+[OVERFLOW] /__overflow-control.html @1440 vw=1440 docScrollW=2000 bodyScrollW=2000 delta=560
+      offenders: div L0 R2000
+[OVERFLOW] /__overflow-control.html @1600 vw=1600 docScrollW=2000 bodyScrollW=2000 delta=400
+      offenders: div L0 R2000</pre>
+<script>
+/* TEMPORARY responsive audit harness — delete after verification.
+   Measures real horizontal overflow inside iframes of each viewport width. */
+(() => {
+  const params = new URLSearchParams(location.search);
+  const paths = params.getAll("p");
+  const widths = (params.get("w") || "320,375,412,768,820,1024,1280,1440").split(",").map(Number);
+  const report = document.getElementById("report");
+  const rows = [];
+  let done = 0;
+  const total = paths.length * widths.length;
+
+  function overflowOwner(el, win, doc) {
+    let p = el.parentElement;
+    while (p && p !== doc.documentElement) {
+      const cs = win.getComputedStyle(p);
+      if (cs.overflowX !== "visible" || cs.overflow !== "visible") return true;
+      p = p.parentElement;
+    }
+    return false;
+  }
+
+  function scan(frame, path, w) {
+    const doc = frame.contentDocument;
+    if (!doc || !doc.body) return { path, w, error: "no-doc" };
+    const win = frame.contentWindow;
+    const vw = doc.documentElement.clientWidth;
+    const bad = [];
+    doc.querySelectorAll("*").forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.width === 0 || r.height === 0) return;
+      if (r.right <= vw + 1 && r.left >= -1) return;
+      if (overflowOwner(el, win, doc)) return;
+      const cls = typeof el.className === "string" ? el.className.split(/\s+/).slice(0, 3).join(".") : "";
+      bad.push(`${el.tagName.toLowerCase()}${cls ? "." + cls : ""} L${Math.round(r.left)} R${Math.round(r.right)}`);
+    });
+    return {
+      path, w, vw,
+      docSW: doc.documentElement.scrollWidth,
+      bodySW: doc.body.scrollWidth,
+      overflow: doc.documentElement.scrollWidth - vw,
+      offenders: bad.slice(0, 6),
+      extra: Math.max(0, bad.length - 6)
+    };
+  }
+
+  function run(entry) {
+    return new Promise((resolve) => {
+      const frame = document.createElement("iframe");
+      frame.setAttribute("width", String(entry.w));
+      frame.style.cssText = `width:${entry.w}px;height:900px;border:0;position:absolute;left:-10000px;top:0`;
+      frame.src = entry.path;
+      const finish = () => {
+        setTimeout(() => {
+          try { rows.push(scan(frame, entry.path, entry.w)); }
+          catch (e) { rows.push({ path: entry.path, w: entry.w, error: String(e) }); }
+          frame.remove();
+          done += 1;
+          report.textContent = `PROGRESS ${done}/${total}\n` + rows.map(render).join("\n");
+          resolve();
+        }, 350);
+      };
+      frame.addEventListener("load", finish, { once: true });
+      document.body.appendChild(frame);
+    });
+  }
+
+  function render(r) {
+    if (r.error) return `! ${r.path} @${r.w} -> ${r.error}`;
+    const flag = r.overflow > 0 ? "OVERFLOW" : "ok";
+    return `[${flag}] ${r.path} @${r.w} vw=${r.vw} docScrollW=${r.docSW} bodyScrollW=${r.bodySW} delta=${r.overflow}` +
+      (r.offenders.length ? `\n      offenders: ${r.offenders.join(" | ")}${r.extra ? ` (+${r.extra} more)` : ""}` : "");
+  }
+
+  const queue = [];
+  for (const p of paths) for (const w of widths) queue.push({ path: p, w });
+
+  const workers = Array.from({ length: 4 }, async () => {
+    while (queue.length) {
+      const next = queue.shift();
+      if (!next) break;
+      await run(next);
+    }
+  });
+
+  Promise.all(workers).then(() => {
+    report.textContent = "DONE\n" + render({ path: "", w: 0, vw: 0, docSW: 0, bodySW: 0, overflow: 0 }) + "\n";
+    report.textContent = "DONE total=" + total + " overflowCount=" + rows.filter((r) => r.overflow > 0).length + "\n" +
+      rows.map(render).join("\n");
+    document.title = "AUDIT-DONE";
+  });
+})();</script>
+
+
+</body></html>

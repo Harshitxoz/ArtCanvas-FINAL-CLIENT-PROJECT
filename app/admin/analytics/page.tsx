@@ -22,7 +22,7 @@ export default async function AnalyticsAdmin() {
   return (
     <AdminShell>
       <header>
-        <h1 className="font-serif text-4xl font-bold">Analytics</h1>
+        <h1 className="font-serif text-3xl font-bold sm:text-4xl">Analytics</h1>
         <p className="mt-1 text-sm text-black/55">Revenue and order trends from real store data (paid orders only).</p>
       </header>
 
@@ -40,10 +40,10 @@ export default async function AnalyticsAdmin() {
             ) : (
               <ul className="mt-4 grid gap-2">
                 {data.daily.map(d => (
-                  <li key={d.day} className="grid grid-cols-[86px_1fr_130px] items-center gap-3 text-sm">
-                    <span className="text-xs font-semibold text-black/55">{d.label}</span>
+                  <li key={d.day} className="grid grid-cols-[54px_minmax(0,1fr)_auto] items-center gap-2 text-sm sm:grid-cols-[86px_minmax(0,1fr)_130px] sm:gap-3">
+                    <span className="text-[11px] font-semibold text-black/55 sm:text-xs">{d.label}</span>
                     <span className="h-5 min-w-[4px] rounded-full bg-[#9a5d19]/85" style={{ width: `${Math.max((d.revenue / maxRevenue) * 100, 2)}%` }} role="presentation" />
-                    <span className="text-right text-xs font-semibold">{d.revenue > 0 ? formatINR(d.revenue) : "—"} <span className="font-normal text-black/45">({d.orders})</span></span>
+                    <span className="whitespace-nowrap text-right text-[11px] font-semibold sm:text-xs">{d.revenue > 0 ? formatINR(d.revenue) : "—"} <span className="font-normal text-black/45">({d.orders})</span></span>
                   </li>
                 ))}
               </ul>

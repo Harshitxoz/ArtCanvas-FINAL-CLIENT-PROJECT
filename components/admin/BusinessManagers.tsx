@@ -11,7 +11,7 @@ type Review={_id:string;productId:string;customerName:string;rating:number;title
 type CustomOrder={_id:string;name:string;email:string;phone:string;description:string;size?:string;style?:string;artworkType?:string;deadline?:string;notes?:string;budget?:number;referenceImage?:string;status:string;adminNotes?:string};
 async function api(url:string,init?:RequestInit){const r=await fetch(url,{...init,headers:{"Content-Type":"application/json",...(init?.headers||{})}});const d=await r.json();if(!r.ok)throw new Error(d.error||"Request failed");return d}
 const input="w-full rounded-xl border border-black/10 bg-white px-3 py-2.5 text-sm outline-none focus:border-[#9a5d19]";
-function Header({title,desc}:{title:string;desc:string}){return <header><h1 className="font-serif text-4xl font-bold">{title}</h1><p className="mt-1 text-sm text-black/55">{desc}</p></header>}
+function Header({title,desc}:{title:string;desc:string}){return <header><h1 className="font-serif text-3xl font-bold sm:text-4xl">{title}</h1><p className="mt-1 text-sm text-black/55">{desc}</p></header>}
 function ListState({loading,error,empty,retry}:{loading:boolean;error:string;empty:React.ReactNode;retry?:()=>void}){
 if(loading)return <div className="rounded-3xl bg-white p-10 text-center"><Loader2 size={20} className="mx-auto animate-spin text-[#9a5d19]" aria-label="Loading" /></div>;
 if(error)return <div role="alert" className="rounded-3xl bg-white p-10 text-center"><p className="text-sm font-semibold text-red-700">{error}</p>{retry?<button onClick={retry} className="mt-4 inline-flex items-center gap-2 rounded-full border border-black/15 px-4 py-2 text-xs font-semibold hover:bg-black/5"><RefreshCw size={13}/>Try again</button>:null}</div>;

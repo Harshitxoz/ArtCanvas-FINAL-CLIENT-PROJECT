@@ -17,7 +17,7 @@ export function ProductInfo({ product, rating, reviewCount }: { product: Product
         {product.bestseller ? <span className="inline-flex rounded-full bg-[#17130f] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">Bestseller</span> : null}
         {product.newArrival ? <span className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#9a5d19] ring-1 ring-[#9a5d19]/30">New Arrival</span> : null}
       </div>
-      <h1 className="mt-4 font-serif text-4xl font-bold leading-tight sm:text-5xl">{product.title}</h1>
+      <h1 className="mt-4 break-words font-serif text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">{product.title}</h1>
       {product.artist ? <p className="mt-2 text-sm font-medium tracking-wide text-black/55">by {product.artist}</p> : null}
       <p className="mt-1 text-xs uppercase tracking-[0.2em] text-black/45">{product.artType === "hand-painted" ? "Original artwork" : "Canvas print"} · <span className="capitalize">{product.category.replace(/-/g, " ")}</span></p>
       {reviewCount > 0 ? (

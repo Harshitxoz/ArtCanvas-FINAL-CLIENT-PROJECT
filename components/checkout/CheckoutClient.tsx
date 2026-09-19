@@ -15,6 +15,16 @@ declare global {
   }
 }
 
+const FIELD_LABELS: Record<string, string> = {
+  name: "Full name",
+  email: "Email",
+  phone: "Phone",
+  address: "Delivery address",
+  city: "City",
+  state: "State",
+  postalCode: "PIN code"
+};
+
 export function CheckoutClient({ freeShippingThreshold = 999, shippingFee = 99 }: { freeShippingThreshold?: number; shippingFee?: number }) {
   const items = useCartStore(s => s.items);
   const clear = useCartStore(s => s.clear);
@@ -104,27 +114,27 @@ export function CheckoutClient({ freeShippingThreshold = 999, shippingFee = 99 }
     }
   }
 
-  if (!items.length) return <div className="mx-auto max-w-3xl px-4 py-20 text-center"><h1 className="text-3xl font-bold">Your cart is empty</h1></div>;
+  if (!items.length) return <div className="mx-auto max-w-3xl px-4 py-16 text-center sm:py-20"><h1 className="text-3xl font-bold sm:text-4xl">Your cart is empty</h1></div>;
 
   return <>
     <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
-    <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 lg:grid-cols-[1fr_380px] lg:px-8">
-      <form onSubmit={submit} className="rounded-3xl border border-black/8 bg-white p-6 sm:p-8">
-        <h1 className="text-4xl font-bold">Checkout</h1>
+    <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 sm:py-12 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-10 lg:px-8">
+      <form onSubmit={submit} className="min-w-0 rounded-3xl border border-black/8 bg-white p-5 sm:p-8">
+        <h1 className="text-3xl font-bold sm:text-4xl">Checkout</h1>
         <p className="mt-2 text-sm text-black/55">Your payment is processed through Razorpay after your order is validated.</p>
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
           {Object.entries(form).map(([key,value]) =>
             <label key={key} className={key==="address"?"sm:col-span-2":""}>
-              <span className="mb-1.5 block text-sm font-semibold capitalize">{key.replace(/([A-Z])/g," $1")}</span>
+              <span className="mb-1.5 block text-sm font-semibold">{FIELD_LABELS[key] ?? key}</span>
               <Input required value={value} onChange={e=>setForm({...form,[key]:e.target.value})}/>
             </label>
           )}
         </div>
         <Button className="mt-7 w-full" disabled={loading}>{loading?"Opening payment…":"Pay & Place Order"}</Button>
       </form>
-      <aside className="h-fit rounded-3xl bg-[#f1ece5] p-6">
+      <aside className="h-fit min-w-0 rounded-3xl bg-[#f1ece5] p-5 sm:p-6">
         <h2 className="text-2xl font-bold">Summary</h2>
-        {items.map(i=><div key={`${i.productId}-${i.size}-${i.frame ?? "unframed"}`} className="mt-4 flex justify-between gap-4 text-sm"><span>{i.title} · {i.size}{i.frame === "framed" ? " · Framed" : ""} × {i.quantity}</span><b>{formatINR(i.price*i.quantity)}</b></div>)}
+        {items.map(i=><div key={`${i.productId}-${i.size}-${i.frame ?? "unframed"}`} className="mt-4 flex justify-between gap-4 text-sm"><span className="min-w-0">{i.title} · {i.size}{i.frame === "framed" ? " · Framed" : ""} × {i.quantity}</span><b className="shrink-0">{formatINR(i.price*i.quantity)}</b></div>)}
         <div className="my-5 border-t border-black/10"></div>
         <div className="flex gap-2"><input value={coupon} onChange={e=>setCoupon(e.target.value.toUpperCase())} placeholder="Coupon code" className="min-w-0 flex-1 rounded-xl border border-black/10 bg-white px-3 py-2 text-sm"/><button type="button" onClick={applyCoupon} disabled={couponBusy} className="rounded-xl border border-[#9a5d19] px-3 py-2 text-sm font-semibold text-[#9a5d19]">{couponBusy?"Checking…":"Apply"}</button></div>
         {couponCode && <div className="mt-2 flex justify-between text-sm text-green-700"><span>Coupon {couponCode}</span><b>-{formatINR(discount)}</b></div>}

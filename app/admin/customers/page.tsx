@@ -53,7 +53,7 @@ export default async function CustomersAdmin() {
     <AdminShell>
       <div className="grid gap-5">
         <header>
-          <h1 className="font-serif text-4xl font-bold">Customers</h1>
+          <h1 className="font-serif text-3xl font-bold sm:text-4xl">Customers</h1>
           <p className="mt-1 text-sm text-black/55">Everyone who registered on the store, with their order activity.</p>
         </header>
 

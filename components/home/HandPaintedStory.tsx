@@ -53,7 +53,7 @@ export function HandPaintedStory() {
           </p>
           <h2
             id="hand-painted-story"
-            className="mt-3 font-serif text-4xl leading-tight text-[#17130f] sm:text-5xl"
+            className="mt-3 font-serif text-3xl leading-tight text-[#17130f] sm:text-5xl"
           >
             The Story Behind Every Painting
           </h2>

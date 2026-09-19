@@ -2,17 +2,43 @@ import { ObjectId, type Sort } from "mongodb";
 import { getDb } from "./db";
 import productsJson from "@/data/products.json";
 import categoriesJson from "@/data/categories.json";
-import type { Category, Product } from "@/types";
+import type { Category, Product, ImageAsset } from "@/types";
 import { isVisibleToStorefront, totalStock, minPrice } from "./product";
 
 const fallbackProducts = productsJson as Product[];
 
+/**
+ * Normalize a raw MongoDB document into a Product.
+ * Handles both legacy (images: string[]) and new (imageAssets?: ImageAsset[]) formats.
+ */
 function normalize(doc: Record<string, unknown>): Product {
   const sizes = (Array.isArray(doc.sizes) ? doc.sizes : []) as Product["sizes"];
+  const rawImages = Array.isArray(doc.images) ? (doc.images as unknown[]) : [];
+  const rawImageAssets = Array.isArray(doc.imageAssets) ? (doc.imageAssets as unknown[]) : [];
+
+  // Extract URLs from either format for backward compatibility
+  const images: string[] = rawImages.map(img => {
+    if (typeof img === "string") return img;
+    if (typeof img === "object" && img !== null && "url" in img) return (img as { url: string }).url;
+    return "";
+  }).filter(Boolean);
+
+  // Build structured image assets if available
+  const imageAssets: ImageAsset[] | undefined = rawImageAssets.length > 0
+    ? rawImageAssets.map(asset => {
+        if (typeof asset === "string") return { url: asset };
+        if (typeof asset === "object" && asset !== null && "url" in asset) {
+          return { url: (asset as { url: string }).url, publicId: (asset as { publicId?: string }).publicId };
+        }
+        return { url: "" };
+      }).filter((a): a is ImageAsset => Boolean(a.url))
+    : undefined;
+
   return {
     ...(doc as unknown as Product),
     _id: String(doc._id),
-    images: Array.isArray(doc.images) ? (doc.images as string[]) : [],
+    images,
+    imageAssets,
     sizes,
     featured: Boolean(doc.featured),
     bestseller: Boolean(doc.bestseller),
