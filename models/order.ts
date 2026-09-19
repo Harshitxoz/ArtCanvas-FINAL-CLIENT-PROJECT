@@ -23,6 +23,7 @@ export interface OrderDocument {
   status: OrderStatus;
   paymentStatus: "pending" | "paid" | "failed";
   paymentId?: string;
+  razorpayOrderId?: string;
   shippingCarrier?: string;
   trackingNumber?: string;
   trackingUrl?: string;

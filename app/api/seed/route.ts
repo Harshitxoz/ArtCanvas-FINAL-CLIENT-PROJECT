@@ -5,9 +5,14 @@ import products from "@/data/products.json";
 import categories from "@/data/categories.json";
 
 export async function POST(req:Request){
-  if(process.env.NODE_ENV==="production")return NextResponse.json({error:"Disabled in production."},{status:403});
-  const secret=req.headers.get("x-seed-secret");
-  if(process.env.SEED_SECRET && secret!==process.env.SEED_SECRET)return NextResponse.json({error:"Forbidden"},{status:403});
+  const secret = req.headers.get("x-seed-secret");
+  if (process.env.NODE_ENV === "production") {
+    if (!process.env.SEED_SECRET || secret !== process.env.SEED_SECRET) {
+      return NextResponse.json({ error: "Disabled in production without valid x-seed-secret." }, { status: 403 });
+    }
+  } else if (process.env.SEED_SECRET && secret !== process.env.SEED_SECRET) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
   try{
     const db=await getDb(); const now=new Date();
     await db.collection("products").deleteMany({});

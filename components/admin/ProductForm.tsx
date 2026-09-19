@@ -114,7 +114,9 @@ export function ProductForm({ product, categories }: { product?: Product; catego
       const payload = {
         title: title.trim(), slug: slug.trim(), artType, category, artist: artist.trim(),
         description: description.trim(), medium: medium.trim(), canvasMaterial: canvasMaterial.trim(), orientation,
-        images: images.map(img => img.url), roomPreview, closeUp, authenticityImage, sizes: parsedSizes,
+        images: images.map(img => img.url),
+        imageAssets: images,
+        roomPreview, closeUp, authenticityImage, sizes: parsedSizes,
         sku: sku.trim(), weight: weight ? Number(weight) : 0, deliveryTime: deliveryTime.trim(),
         frameAvailable, framedPrice: framedPrice ? Number(framedPrice) : 0, unframedPrice: unframedPrice ? Number(unframedPrice) : 0,
         care: care.trim(), featured, bestseller, newArrival,
@@ -185,7 +187,7 @@ export function ProductForm({ product, categories }: { product?: Product; catego
         </div>
         <label className={LABEL + " mt-4"}>Description <span className="text-red-500">*</span></label>
         <textarea required minLength={10} className={FIELD + " min-h-32 leading-6"} value={description} onChange={e => setDescription(e.target.value)} placeholder="Story, mood, colours and ideal rooms…" aria-label="Description" />
-        <p className={HELPER}>{description.length}/5000 characters · Describe the artwork's story and mood.</p>
+        <p className={HELPER}>{description.length}/5000 characters · Describe the artwork&apos;s story and mood.</p>
 
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
@@ -210,6 +212,8 @@ export function ProductForm({ product, categories }: { product?: Product; catego
              disabled={loading}
              onSaveImageAction={async (action, index) => {
                if (!product?._id) return;
+                // Temporary client-side logging: verify index 0 is sent for the first image.
+                console.log("[REMOVE_IMAGE_CLIENT] sending imageAction:", action, "imageIndex:", index, "(type:", typeof index + ")");
                const r = await fetch("/api/products/" + product._id, {
                  method: "PATCH",
                  headers: { "Content-Type": "application/json" },
@@ -223,6 +227,7 @@ export function ProductForm({ product, categories }: { product?: Product; catego
                  setImages(updated.imageAssets?.length ? updated.imageAssets : (updated.images || []).map((url: string) => ({ url })));
                }
              }}
+
            />
           <div className="grid gap-4 sm:grid-cols-3">
             <SingleImage label="Room preview image" value={roomPreview} onChange={setRoomPreview} />

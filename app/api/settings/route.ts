@@ -32,7 +32,7 @@ export async function PATCH(req: Request) {
             ? "Unauthorized"
             : "Could not save settings",
       },
-      { status: 500 }
+      { status: e instanceof Error && e.message === "UNAUTHORIZED" ? 401 : 500 }
     );
   }
 }

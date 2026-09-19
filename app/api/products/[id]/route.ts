@@ -27,13 +27,14 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     const _id = new ObjectId(id);
 
     // Handle image-specific operations
+    // NOTE: read the request body ONCE — req.json() can only be consumed a single time.
     const body = await req.json();
     if (body.imageAction) {
-      return handleImageAction(req, db, _id, body);
+      return handleImageAction(db, _id, body);
     }
 
     // Standard product update
-    const parsed = productSchema.partial().safeParse(await req.json());
+    const parsed = productSchema.partial().safeParse(body);
     if (!parsed.success) return NextResponse.json({ error: "Invalid product data", details: parsed.error.flatten() }, { status: 400 });
 
     const existing = await db.collection("products").findOne({ _id });
@@ -45,6 +46,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     }
 
     const patch = { ...parsed.data } as Record<string, unknown>;
+    if (Array.isArray(parsed.data.images)) {
+      patch.images = parsed.data.images.map(img => img.url);
+      patch.imageAssets = parsed.data.images;
+    }
     if (typeof patch.status === "string") {
       if (patch.status === "published") {
         if (patch.active === undefined) patch.active = existing.active ?? true;
@@ -56,12 +61,33 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     await db.collection("products").updateOne({ _id }, { $set: { ...patch, updatedAt: new Date() } });
     return NextResponse.json({ ok: true });
   } catch (e) {
-    return NextResponse.json({ error: e instanceof Error && e.message === "UNAUTHORIZED" ? "Unauthorized" : "Could not update product" }, { status: e instanceof Error && e.message === "UNAUTHORIZED" ? 401 : 500 });
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("[PATCH /api/products/:id] FAILED:", msg, e instanceof Error ? e.stack : undefined);
+    if (e instanceof Error && e.message === "UNAUTHORIZED") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    // TEMPORARY detailed error for production diagnosis (admin-only route).
+    return NextResponse.json({ error: "Could not update product", detail: msg }, { status: 500 });
   }
 }
 
-async function handleImageAction(req: Request, db: Awaited<ReturnType<typeof getDb>>, _id: ObjectId, body: Record<string, unknown>): Promise<NextResponse> {
-  const { imageAction, imageIndex, newOrder } = body as { imageAction?: string; imageIndex?: number; newOrder?: string[] };
+async function handleImageAction(db: Awaited<ReturnType<typeof getDb>>, _id: ObjectId, body: Record<string, unknown>): Promise<NextResponse> {
+ try {
+  const imageAction = typeof body.imageAction === "string" ? body.imageAction : undefined;
+  console.log("[IMAGE_ACTION] productId:", String(_id), "action:", imageAction, "raw imageIndex:", JSON.stringify(body.imageIndex), "(type:", typeof body.imageIndex + ")");
+
+  // Normalize imageIndex: accept number or numeric string (JSON may deliver "0").
+  // Number("") is 0, so guard against empty/whitespace strings explicitly.
+  let imageIndex: number | undefined;
+  const rawIndex = body.imageIndex;
+  if (typeof rawIndex === "number") {
+    imageIndex = rawIndex;
+  } else if (typeof rawIndex === "string" && rawIndex.trim() !== "") {
+    const n = Number(rawIndex);
+    imageIndex = Number.isNaN(n) ? undefined : n;
+  }
+
+  const newOrder = body.newOrder as string[] | undefined;
 
   const existing = await db.collection("products").findOne({ _id });
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -78,8 +104,21 @@ async function handleImageAction(req: Request, db: Awaited<ReturnType<typeof get
     }
   }
 
-  // Validate imageIndex
-  if (typeof imageIndex === "number" && (imageIndex < 0 || imageIndex >= currentImages.length)) {
+  // Temporary server-side logging for the image-removal diagnosis.
+  console.log("[REMOVE_IMAGE] received imageIndex:", rawIndex, "(type:", typeof rawIndex + ")");
+  console.log("[REMOVE_IMAGE] current images.length:", currentImages.length);
+  console.log("[REMOVE_IMAGE] current images:", JSON.stringify(currentImages.map(img => ({ url: img.url, publicId: img.publicId }))));
+  console.log("[REMOVE_IMAGE] normalized imageIndex:", imageIndex);
+
+  // Shared validation for actions that require an index.
+  const hasValidIndex =
+    typeof imageIndex === "number" &&
+    Number.isInteger(imageIndex) &&
+    imageIndex >= 0 &&
+    imageIndex < currentImages.length;
+
+  console.log("[IMAGE_ACTION] normalized imageIndex:", imageIndex, "images.length:", currentImages.length, "hasValidIndex:", hasValidIndex);
+  if ((imageAction === "remove" || imageAction === "setPrimary") && !hasValidIndex) {
     return NextResponse.json({ error: "Invalid image index." }, { status: 400 });
   }
 
@@ -87,20 +126,26 @@ async function handleImageAction(req: Request, db: Awaited<ReturnType<typeof get
     if (currentImages.length <= 1) {
       return NextResponse.json({ error: "Cannot remove the only artwork image. Add another image first." }, { status: 400 });
     }
-    if (imageIndex === 0) {
-      return NextResponse.json({ error: "Cannot remove the primary image. Set another image as primary first." }, { status: 400 });
+    // hasValidIndex already guarantees a normalized zero-based integer index.
+    // Removing index 0 shifts images[1] to images[0], so it automatically becomes Primary.
+    const removed = currentImages.splice(imageIndex as number, 1);
+    console.log("[REMOVE_IMAGE] removed:", JSON.stringify(removed[0]), "remaining:", currentImages.length, "new primary:", JSON.stringify(currentImages[0]));
+    if (removed[0]?.publicId) {
+      try {
+        await deleteResource(removed[0].publicId);
+        console.log("[IMAGE_ACTION] Cloudinary deleted:", removed[0].publicId);
+      } catch (e) {
+        console.warn("[IMAGE_ACTION] Cloudinary delete skipped/failed:", e instanceof Error ? e.message : String(e));
+      }
+    } else {
+      console.log("[IMAGE_ACTION] No publicId; skipping Cloudinary delete.");
     }
-    if (typeof imageIndex !== "number") {
-      return NextResponse.json({ error: "Invalid image index." }, { status: 400 });
-    }
-    // Remove the image
-    currentImages.splice(imageIndex, 1);
   } else if (imageAction === "setPrimary") {
-    if (typeof imageIndex !== "number" || imageIndex === 0) {
+    if (imageIndex === 0) {
       return NextResponse.json({ ok: true, message: "Image is already primary." });
     }
     // Move selected image to front
-    const [primary] = currentImages.splice(imageIndex, 1);
+    const [primary] = currentImages.splice(imageIndex as number, 1);
     currentImages.unshift(primary);
   } else if (imageAction === "reorder" && Array.isArray(newOrder)) {
     // Validate new order contains all current URLs
@@ -128,7 +173,8 @@ async function handleImageAction(req: Request, db: Awaited<ReturnType<typeof get
     publicId: img.publicId
   }));
 
-  await db.collection("products").updateOne(
+  console.log("[IMAGE_ACTION] images after:", JSON.stringify(urls), "count:", urls.length);
+  const updateResult = await db.collection("products").updateOne(
     { _id },
     {
       $set: {
@@ -138,8 +184,18 @@ async function handleImageAction(req: Request, db: Awaited<ReturnType<typeof get
       }
     }
   );
+  console.log("[IMAGE_ACTION] MongoDB update result:", JSON.stringify({ matchedCount: updateResult.matchedCount, modifiedCount: updateResult.modifiedCount, acknowledged: updateResult.acknowledged }));
+  if (updateResult.matchedCount === 0) {
+    return NextResponse.json({ error: "Product not found during update." }, { status: 404 });
+  }
 
   return NextResponse.json({ ok: true, message: "Image updated successfully." });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("[IMAGE_ACTION] FAILED productId:", String(_id), "action:", String(body.imageAction), "rawIndex:", JSON.stringify(body.imageIndex), "error:", msg, e instanceof Error ? e.stack : "");
+    // TEMPORARY detailed error for production diagnosis (admin-only route).
+    return NextResponse.json({ error: "Could not update product", detail: msg }, { status: 500 });
+  }
 }
 
 export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {

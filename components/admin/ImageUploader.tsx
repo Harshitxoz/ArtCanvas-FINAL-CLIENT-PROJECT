@@ -75,17 +75,23 @@ export function ImageUploader({
       toast.error("This is the only artwork image. Add another image before removing it.");
       return;
     }
-    if (index === 0) {
-      toast.error("Cannot remove the primary image. Set another image as primary first.");
-      return;
-    }
+
+    // Temporary client-side logging to verify the zero-based index mapping.
+    console.log("[REMOVE_IMAGE_CLIENT] displayed image number:", index + 1, "actual array index:", index, "image URL:", images[index]?.url);
 
     setRemovingIndex(index);
     try {
       if (onSaveImageAction) {
         await onSaveImageAction("remove", index);
       } else {
-        onChange(images.filter((_, i) => i !== index));
+        // Client-side remove - move current primary to first if removing index 0
+        if (index === 0 && images.length > 1) {
+          // Promote the next image to primary
+          const newImages = images.filter((_, i) => i !== index);
+          onChange(newImages);
+        } else {
+          onChange(images.filter((_, i) => i !== index));
+        }
       }
       toast.success("Image removed from gallery");
     } catch (e) {
@@ -189,15 +195,16 @@ export function ImageUploader({
                   </button>
                 )}
 
-                {/* Remove - visible on all images */}
+                {/* Remove - visible on all images.
+                    NOTE: no onClick on the inner button — the ConfirmDialog trigger
+                    wrapper opens the dialog, and onConfirm fires the single remove. */}
                 <ConfirmDialog
                   trigger={
                     <button
                       type="button"
                       title="Remove image"
                       aria-label={`Remove image ${i + 1}`}
-                      disabled={disabled || removingIndex === i || (i === 0 && images.length > 1)}
-                      onClick={() => handleRemove(i)}
+                      disabled={disabled || removingIndex === i}
                       className="grid h-9 w-9 place-items-center rounded-full bg-white/95 shadow hover:bg-white hover:text-red-600 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {removingIndex === i ? <Loader2 size={16} className="text-red-600 animate-spin" /> : <X size={16} className="text-black" />}

@@ -1,22 +1,32 @@
-
-import { getStoreProducts } from "@/lib/queries";
+import { getStoreProducts, getCategories } from "@/lib/queries";
 import { ShopClient } from "@/components/products/ShopClient";
-import categories from "@/data/categories.json";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const cat = categories.find(c => c.slug === slug);
-  if (!cat) return { title: "Category not found" };
-  return { title: cat.name + " Art — " + cat.description + " | ArtCanvas", description: cat.description };
+  const categories = await getCategories();
+  const cat = categories.find((c) => c.slug === slug);
+  if (!cat) return { title: "Category not found | ArtCanvas" };
+  return {
+    title: `${cat.name} Art — Curated Canvas & Artwork | ArtCanvas`,
+    description: cat.description || `Browse curated ${cat.name} artworks on ArtCanvas.`,
+  };
 }
 
-export default async function CategoryPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+export default async function CategoryPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { slug } = await params;
   const sp = await searchParams;
-  const cat = categories.find(c => c.slug === slug);
+  const categories = await getCategories();
+  const cat = categories.find((c) => c.slug === slug);
   if (!cat) notFound();
+
   const products = await getStoreProducts({
     category: slug,
     search: typeof sp.q === "string" ? sp.q : undefined,
@@ -28,17 +38,17 @@ export default async function CategoryPage({ params, searchParams }: { params: P
     sizes: typeof sp.size === "string" ? [sp.size] : Array.isArray(sp.size) ? sp.size : undefined,
     sort: typeof sp.sort === "string" ? sp.sort : "featured",
   });
+
   return (
     <Suspense fallback={null}>
       <ShopClient
         products={products}
         title={cat.name}
         eyebrow={cat.name}
-        intro={cat.description}
+        intro={cat.description || `Browse our exclusive collection of ${cat.name.toLowerCase()} artworks.`}
         basePath={`/categories/${slug}`}
         lockedCategory={slug}
       />
     </Suspense>
   );
 }
-

@@ -93,6 +93,7 @@ export function CheckoutClient({ freeShippingThreshold = 999, shippingFee = 99 }
             headers:{"Content-Type":"application/json"},
             body:JSON.stringify({
               orderId: data.orderId,
+              razorpayOrderId: response.razorpay_order_id,
               paymentId: response.razorpay_payment_id,
               signature: response.razorpay_signature
             })
@@ -103,7 +104,7 @@ export function CheckoutClient({ freeShippingThreshold = 999, shippingFee = 99 }
           }
           clear();
           toast.success("Payment successful. Your order is confirmed.");
-          router.push(`/account/orders?order=${data.orderId}`);
+          router.push((`/order-confirmation/${data.orderId}`) as never);
         },
         modal: { ondismiss: () => setLoading(false) }
       });

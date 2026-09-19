@@ -156,11 +156,8 @@ type OrderHistoryData = { note: string; createdAt: string | Date }[];
 function OrderHistory({ orderId }: { orderId: string }) {
   void orderId;
   return (
-    <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
-      <h2 className="text-xl font-bold">Order History</h2>
-      <p className="mt-4 rounded-xl bg-[#eee9e1] p-4 text-sm text-black/55">
-        No admin actions have been recorded for this order yet.
-      </p>
-    </section>
+    <p className="mt-4 rounded-xl bg-[#eee9e1] p-4 text-sm text-black/55">
+      No admin actions have been recorded for this order yet.
+    </p>
   );
 }

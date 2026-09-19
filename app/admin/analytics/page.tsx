@@ -124,7 +124,26 @@ async function loadAnalytics(): Promise<AnalyticsData> {
       orders.aggregate([
         { $match: { paymentStatus: "paid" } },
         { $unwind: "$items" },
-        { $lookup: { from: "products", localField: "items.productId", foreignField: "_id", as: "product" } },
+        {
+          $lookup: {
+            from: "products",
+            let: { pid: "$items.productId" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $or: [
+                      { $eq: ["$_id", { $convert: { input: "$$pid", to: "objectId", onError: null, onNull: null } }] },
+                      { $eq: [{ $toString: "$_id" }, "$$pid"] },
+                      { $eq: ["$slug", "$$pid"] }
+                    ]
+                  }
+                }
+              }
+            ],
+            as: "product"
+          }
+        },
         { $unwind: { path: "$product", preserveNullAndEmptyArrays: true } },
         { $group: { _id: "$product.artType", revenue: { $sum: { $multiply: ["$items.price", "$items.quantity"] } }, qty: { $sum: "$items.quantity" } } },
         { $sort: { revenue: -1 } }
@@ -132,7 +151,26 @@ async function loadAnalytics(): Promise<AnalyticsData> {
       orders.aggregate([
         { $match: { paymentStatus: "paid" } },
         { $unwind: "$items" },
-        { $lookup: { from: "products", localField: "items.productId", foreignField: "_id", as: "product" } },
+        {
+          $lookup: {
+            from: "products",
+            let: { pid: "$items.productId" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $or: [
+                      { $eq: ["$_id", { $convert: { input: "$$pid", to: "objectId", onError: null, onNull: null } }] },
+                      { $eq: [{ $toString: "$_id" }, "$$pid"] },
+                      { $eq: ["$slug", "$$pid"] }
+                    ]
+                  }
+                }
+              }
+            ],
+            as: "product"
+          }
+        },
         { $unwind: { path: "$product", preserveNullAndEmptyArrays: true } },
         { $group: { _id: { $ifNull: ["$product.category", "uncategorised"] }, revenue: { $sum: { $multiply: ["$items.price", "$items.quantity"] } }, orderIds: { $addToSet: "$_id" } } },
         { $project: { revenue: 1, orderCount: { $size: "$orderIds" } } },

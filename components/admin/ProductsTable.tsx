@@ -94,10 +94,14 @@ export function ProductsTable({ products, initialFilter = "all", categories }: {
   async function archive(id: string, title: string) {
     setBusyId(id);
     try {
-      const r = await fetch("/api/products/" + id, { method: "DELETE" });
+      const r = await fetch("/api/products/" + id, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "archived", active: false })
+      });
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(d.error || "Could not archive artwork.");
-      toast.success(d.message || ('"' + title + '" archived.'));
+      toast.success('"' + title + '" moved to archived.');
       router.refresh();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not archive artwork.");

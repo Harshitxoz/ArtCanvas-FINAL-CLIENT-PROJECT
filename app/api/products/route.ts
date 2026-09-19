@@ -38,7 +38,16 @@ export async function POST(req: Request) {
     const now = new Date();
     // active is derived from status for backward compatibility with the storefront.
     const active = parsed.data.status === "published" ? (parsed.data.active ?? true) : false;
-    const result = await db.collection("products").insertOne({ ...parsed.data, active, createdAt: now, updatedAt: now });
+    const imageUrls = parsed.data.images.map(img => img.url);
+    const imageAssets = parsed.data.images;
+    const result = await db.collection("products").insertOne({
+      ...parsed.data,
+      images: imageUrls,
+      imageAssets,
+      active,
+      createdAt: now,
+      updatedAt: now
+    });
     return NextResponse.json({ id: String(result.insertedId) }, { status: 201 });
   } catch (e) {
     const unauthorized = e instanceof Error && e.message === "UNAUTHORIZED";
