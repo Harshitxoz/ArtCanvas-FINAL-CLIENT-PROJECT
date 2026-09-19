@@ -17,6 +17,19 @@ interface ImageUploaderProps {
   disabled?: boolean;
 }
 
+function getImageUrl(asset: unknown): string {
+  if (!asset) return "";
+  if (typeof asset === "string") return asset;
+  if (typeof asset === "object") {
+    let u = (asset as Record<string, unknown>).url;
+    while (u && typeof u === "object") {
+      u = (u as Record<string, unknown>).url;
+    }
+    if (typeof u === "string") return u;
+  }
+  return "";
+}
+
 export function ImageUploader({
   images,
   onChange,
@@ -159,15 +172,17 @@ export function ImageUploader({
       {/* Image gallery */}
       {images.length > 0 && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {images.map((asset, i) => (
+          {images.map((asset, i) => {
+            const src = getImageUrl(asset);
+            return (
             <div
-              key={asset.url + i}
+              key={(asset.publicId || src || "") + i}
               className={`group relative overflow-hidden rounded-xl border ${i === 0 ? "border-[#9a5d19]/40" : "border-black/10"} bg-[#eee9e1] ${disabled ? "opacity-70" : ""}`}
             >
               {/* Image preview */}
               <div className="aspect-square w-full overflow-hidden">
                 <img
-                  src={asset.url}
+                  src={src || "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80"}
                   alt={`Artwork image ${i + 1}`}
                   className="h-full w-full object-cover transition hover:scale-105"
                   loading="lazy"
@@ -223,7 +238,8 @@ export function ImageUploader({
                 {i + 1}
               </div>
             </div>
-          ))}
+          );
+        })}
         </div>
       )}
 

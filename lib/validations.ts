@@ -43,14 +43,18 @@ export const productSizeSchema = z.object({
 
 /** Accepts either a plain URL string (legacy) or an object with url + optional publicId (new). */
 const imageInput = z.union([
-  z.string().url(),
+  z.string(),
   z.object({
-    url: z.string().url(),
+    url: z.any(),
     publicId: z.string().optional()
   }).passthrough()
 ]).transform(v => {
   if (typeof v === "string") return { url: v };
-  return { url: v.url, publicId: v.publicId };
+  let u = v.url;
+  while (u && typeof u === "object") {
+    u = u.url;
+  }
+  return { url: typeof u === "string" ? u : "", publicId: v.publicId };
 });
 
 export const productSchema = z.object({

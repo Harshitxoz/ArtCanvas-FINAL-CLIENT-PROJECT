@@ -50,7 +50,19 @@ export function ProductForm({ product, categories }: { product?: Product; catego
   const [medium, setMedium] = useState(product?.medium || "");
   const [canvasMaterial, setCanvasMaterial] = useState(product?.canvasMaterial || "");
   const [orientation, setOrientation] = useState<"landscape" | "portrait" | "square">(product?.orientation || "landscape");
-  const [images, setImages] = useState<ImageAsset[]>(product?.imageAssets?.length ? product.imageAssets : (product?.images || []).map(url => ({ url })));
+  const [images, setImages] = useState<ImageAsset[]>(() => {
+    const raw = product?.imageAssets?.length ? product.imageAssets : (product?.images || []);
+    return (raw as any[]).map((item) => {
+      let u = typeof item === "string" ? item : item?.url;
+      while (u && typeof u === "object") {
+        u = u.url;
+      }
+      return {
+        url: typeof u === "string" ? u : "",
+        publicId: typeof item === "object" ? item?.publicId : undefined
+      };
+    }).filter(a => Boolean(a.url));
+  });
   const [roomPreview, setRoomPreview] = useState(product?.roomPreview || "");
   const [closeUp, setCloseUp] = useState(product?.closeUp || "");
   const [authenticityImage, setAuthenticityImage] = useState(product?.authenticityImage || "");
@@ -111,11 +123,22 @@ export function ProductForm({ product, categories }: { product?: Product; catego
     }
     setLoading(true);
     try {
+      const cleanImages = images.map((img: any) => {
+        let u = typeof img === "string" ? img : img?.url;
+        while (u && typeof u === "object") {
+          u = u.url;
+        }
+        return {
+          url: typeof u === "string" ? u : "",
+          publicId: typeof img === "object" ? img?.publicId : undefined
+        };
+      }).filter(img => Boolean(img.url));
+
       const payload = {
         title: title.trim(), slug: slug.trim(), artType, category, artist: artist.trim(),
         description: description.trim(), medium: medium.trim(), canvasMaterial: canvasMaterial.trim(), orientation,
-        images: images.map(img => img.url),
-        imageAssets: images,
+        images: cleanImages.map(img => img.url),
+        imageAssets: cleanImages,
         roomPreview, closeUp, authenticityImage, sizes: parsedSizes,
         sku: sku.trim(), weight: weight ? Number(weight) : 0, deliveryTime: deliveryTime.trim(),
         frameAvailable, framedPrice: framedPrice ? Number(framedPrice) : 0, unframedPrice: unframedPrice ? Number(unframedPrice) : 0,
