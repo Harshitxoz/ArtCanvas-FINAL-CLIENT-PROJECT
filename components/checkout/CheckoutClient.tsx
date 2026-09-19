@@ -78,8 +78,15 @@ export function CheckoutClient({ freeShippingThreshold = 999, shippingFee = 99 }
         return;
       }
 
+      const razorpayKey = data.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+      if (!razorpayKey) {
+        toast.error("Razorpay Key ID is not configured. Add RAZORPAY_KEY_ID in Vercel environment variables.");
+        setLoading(false);
+        return;
+      }
+
       const razorpay = new window.Razorpay({
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        key: razorpayKey,
         amount: data.payment.amount,
         currency: data.payment.currency,
         name: "ArtCanvas",

@@ -19,6 +19,10 @@ export async function POST(req:Request){
     const result=await db.collection("orders").insertOne({userId:session?new ObjectId(session.id):undefined,items,customer:parsed.data.customer,subtotal,discount,couponCode:couponCode||undefined,shipping,total,status:"pending",paymentStatus:"pending",createdAt:now,updatedAt:now});
     let payment=null;
     try{const razorpay=getRazorpay();payment=await razorpay.orders.create({amount:total*100,currency:"INR",receipt:String(result.insertedId)});}catch(paymentError){console.error("[RAZORPAY_ORDER_ERROR]", paymentError instanceof Error ? paymentError.message : paymentError);}
-    return NextResponse.json({orderId:String(result.insertedId),payment});
+    return NextResponse.json({
+      orderId: String(result.insertedId),
+      payment,
+      keyId: process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID
+    });
   }catch(e){console.error("[ORDER_CREATE_ERROR]", e);const message=e instanceof Error?e.message:"ORDER_FAILED";const status=["PRODUCT_NOT_FOUND","OUT_OF_STOCK","FRAME_UNAVAILABLE","COUPON_INVALID","COUPON_EXPIRED","COUPON_LIMIT"].includes(message)?409:500;return NextResponse.json({error:message==="OUT_OF_STOCK"?"One or more selected sizes are out of stock.":message==="PRODUCT_NOT_FOUND"?"A selected product is no longer available.":message==="FRAME_UNAVAILABLE"?"Framing is not available for a selected artwork.":message==="COUPON_INVALID"?"That coupon is not valid.":message==="COUPON_EXPIRED"?"That coupon has expired.":message==="COUPON_LIMIT"?"That coupon has reached its usage limit.":message==="MongoDB is not configured."?"Database is not configured. Please contact support.":"Could not create order."},{status});}
 }
