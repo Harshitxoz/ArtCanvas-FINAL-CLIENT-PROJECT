@@ -1,6 +1,7 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import type { Route } from "next";
 
 export type FilterState = {
   type: string;
@@ -80,7 +81,7 @@ export function FilterSidebar({ basePath = "/shop", lockedType, lockedCategory }
     const p = new URLSearchParams(params.toString());
     value ? p.set(key, value) : p.delete(key);
     const href = basePath + (p.toString() ? "?" + p.toString() : "");
-    router.push(href as never);
+    router.push(href as Route);
   }
 
   function toggleSize(value: string) {
@@ -88,11 +89,11 @@ export function FilterSidebar({ basePath = "/shop", lockedType, lockedCategory }
     if (p.getAll("size").includes(value)) p.delete("size", value);
     else p.append("size", value);
     const href = basePath + (p.toString() ? "?" + p.toString() : "");
-    router.push(href as never);
+    router.push(href as Route);
   }
 
   function clearAll() {
-    router.push(basePath as never);
+    router.push(basePath as Route);
   }
 
   const hasFilters = fs.type || fs.category || fs.minPrice || fs.maxPrice || fs.frame || fs.availability || fs.sizes.length ? 1 : 0;

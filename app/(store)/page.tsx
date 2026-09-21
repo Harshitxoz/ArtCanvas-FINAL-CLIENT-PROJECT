@@ -7,5 +7,18 @@ import { getSettings } from "@/lib/settings";
 
 export default async function HomePage() {
   const settings = await getSettings();
-  return <><Hero headline={settings.headline} subheadline={settings.subheadline} heroImageUrl={settings.heroImageUrl}/><ShopType/><CategorySection/><FeaturedCollection/><WhyChooseUs/></>;
+
+  return (
+    <main>
+      <Hero
+        headline={settings.headline}
+        subheadline={settings.subheadline}
+        heroImageUrl={settings.heroImageUrl}
+      />
+      <ShopType />
+      <CategorySection />
+      <FeaturedCollection />
+      <WhyChooseUs />
+    </main>
+  );
 }

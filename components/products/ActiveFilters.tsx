@@ -1,5 +1,6 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
+import type { Route } from "next";
 import { parseFilters } from "./ProductFilters";
 
 export function ActiveFilters({ basePath = "/shop", lockedType, lockedCategory }: { basePath?: string; lockedType?: string; lockedCategory?: string }) {
@@ -20,13 +21,13 @@ export function ActiveFilters({ basePath = "/shop", lockedType, lockedCategory }
     const p = new URLSearchParams(params.toString());
     p.delete(key);
     const href = basePath + (p.toString() ? "?" + p.toString() : "");
-    router.push(href as never);
+    router.push(href as Route);
   }
   function removeSize(sz: string) {
     const p = new URLSearchParams(params.toString());
     p.delete("size", sz);
     const href = basePath + (p.toString() ? "?" + p.toString() : "");
-    router.push(href as never);
+    router.push(href as Route);
   }
 
   if (!chips.length) return null;

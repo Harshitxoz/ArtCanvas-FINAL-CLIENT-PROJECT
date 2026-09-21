@@ -34,7 +34,7 @@ export function ProductCard({ product }: { product: DisplayProduct }) {
   const discount = size && compareAt && compareAt > size.price ? sizeDiscount(size.price, compareAt) : 0;
 
   return (
-    <article className="group">
+    <article className="group flex h-full flex-col">
       <div className="relative overflow-hidden rounded-2xl bg-[#eee9e1]">
         <Link href={(("/products/" + product.slug) as never)} className="block aspect-[4/5] relative">
           <Image src={firstImage(product)} alt={product.title} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw" className="object-cover transition duration-700 group-hover:scale-105" />
@@ -48,11 +48,15 @@ export function ProductCard({ product }: { product: DisplayProduct }) {
           <button onClick={() => toggle(id)} className="grid h-9 w-9 place-items-center rounded-full bg-white/90 shadow xs:h-10 xs:w-10" aria-label="Toggle wishlist"><Heart size={18} fill={has ? "currentColor" : "none"} className={has ? "text-[#9a5d19]" : ""} /></button>
         </div>
       </div>
-      <div className="pt-4">
-        <Link href={(("/products/" + product.slug) as never)}><h3 className="break-words font-serif text-lg font-bold sm:text-xl">{product.title}</h3></Link>
+      <div className="flex flex-1 flex-col pt-4 min-w-0">
+        <Link href={(("/products/" + product.slug) as never)} title={product.title} className="block min-w-0">
+          <h3 className="truncate font-serif text-lg font-bold sm:text-xl">{product.title}</h3>
+        </Link>
         <p className="mt-1 text-sm capitalize text-black/50">{product.category.replace("-", " ")}</p>
-        <div className="mt-2 font-semibold">{sizes.length > 1 ? "From " : ""}{formatINR(size ? size.price : min)}</div>
-        {discount > 0 && compareAt ? <p className="mt-1 text-xs text-black/50"><s>{formatINR(compareAt)}</s> <span className="font-semibold text-[#1f7a4d]">{discount}% off</span></p> : null}
+        <div className="mt-2 flex flex-wrap items-baseline gap-2 font-semibold">
+          <span>{sizes.length > 1 ? "From " : ""}{formatINR(size ? size.price : min)}</span>
+          {discount > 0 && compareAt ? <span className="text-xs font-normal text-black/50"><s>{formatINR(compareAt)}</s> <span className="font-semibold text-[#1f7a4d]">{discount}% off</span></span> : null}
+        </div>
         <button
           disabled={stock < 1 || !size}
           onClick={() => {

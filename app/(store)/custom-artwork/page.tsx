@@ -1,34 +1,357 @@
 "use client";
+
 import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { customOrderRequestSchema } from "@/lib/validations";
+import { CheckCircle2 } from "lucide-react";
 
-const EMPTY = { name: "", email: "", phone: "", artworkType: "hand-painted", size: "", style: "", budget: "", deadline: "", description: "", notes: "", referenceImage: "" };
-type FormState = typeof EMPTY;
-const inputLabel = "text-sm font-semibold";
-const helpText = "mt-1 block text-xs font-normal text-black/50";
-export default function CustomArtwork() {
-const [busy, setBusy] = useState(false);
-const [form, setForm] = useState<FormState>(EMPTY);
-const [errors, setErrors] = useState<Record<string, string>>({});
-const [serverError, setServerError] = useState("");
-const [submitted, setSubmitted] = useState(false);
-function update<K extends keyof FormState>(key: K, value: FormState[K]) {
-setForm((f) => ({ ...f, [key]: value }));
-setErrors((e) => { if (!e[key]) return e; const n = { ...e }; delete n[key]; return n; });
+const INITIAL_FORM = {
+  name: "",
+  email: "",
+  phone: "",
+  artworkType: "hand-painted" as "hand-painted" | "printed-canvas",
+  size: "",
+  style: "",
+  budget: "",
+  deadline: "",
+  description: "",
+  notes: "",
+  referenceImage: "",
+};
+
+type FormState = typeof INITIAL_FORM;
+
+export default function CustomArtworkPage() {
+  const [busy, setBusy] = useState(false);
+  const [form, setForm] = useState<FormState>(INITIAL_FORM);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [serverError, setServerError] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  function update<K extends keyof FormState>(key: K, value: FormState[K]) {
+    setForm((prev) => ({ ...prev, [key]: value }));
+    setErrors((prev) => {
+      if (!prev[key]) return prev;
+      const copy = { ...prev };
+      delete copy[key];
+      return copy;
+    });
+  }
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (busy) return;
+    setServerError("");
+
+    const parsed = customOrderRequestSchema.safeParse({
+      ...form,
+      budget: form.budget === "" ? undefined : Number(form.budget),
+      referenceImage: form.referenceImage === "" ? undefined : form.referenceImage,
+    });
+
+    if (!parsed.success) {
+      const fieldErrors: Record<string, string> = {};
+      for (const issue of parsed.error.issues) {
+        const fieldName = String(issue.path[0] ?? "form");
+        if (!fieldErrors[fieldName]) {
+          fieldErrors[fieldName] = issue.message;
+        }
+      }
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setBusy(true);
+    try {
+      const res = await fetch("/api/custom-orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed.data),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Could not submit your request. Please try again.");
+      }
+
+      setSubmitted(true);
+      setForm(INITIAL_FORM);
+      setErrors({});
+    } catch (err) {
+      setServerError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function renderError(key: string) {
+    return errors[key] ? (
+      <span role="alert" className="mt-1 block text-xs font-medium text-red-600">
+        {errors[key]}
+      </span>
+    ) : null;
+  }
+
+  return (
+    <main className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[.85fr_1.15fr] lg:px-8">
+      {/* Intro info section */}
+      <section className="pt-2" aria-labelledby="custom-artwork-heading">
+        <p className="text-xs font-bold uppercase tracking-[.25em] text-[#9a5d19]">
+          Made for Your Space
+        </p>
+        <h1
+          id="custom-artwork-heading"
+          className="mt-3 font-serif text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl"
+        >
+          Commission a Custom Artwork
+        </h1>
+        <p className="mt-5 max-w-xl text-base leading-relaxed text-black/65">
+          Tell our master artists what you envision. Whether it is an original textured oil on canvas,
+          a bespoke family portrait, or custom dimensions for a signature wall, we bring your idea to life.
+        </p>
+
+        <ul className="mt-8 grid gap-3.5 text-sm text-neutral-700">
+          <li className="flex items-center gap-2.5">
+            <span className="h-2 w-2 rounded-full bg-[#9a5d19]" />
+            Bespoke colour palette matched to your interior architecture
+          </li>
+          <li className="flex items-center gap-2.5">
+            <span className="h-2 w-2 rounded-full bg-[#9a5d19]" />
+            Custom dimensions & solid hardwood framing options
+          </li>
+          <li className="flex items-center gap-2.5">
+            <span className="h-2 w-2 rounded-full bg-[#9a5d19]" />
+            Full transparent quote and digital preview before painting begins
+          </li>
+          <li className="flex items-center gap-2.5">
+            <span className="h-2 w-2 rounded-full bg-[#9a5d19]" />
+            Direct studio progress photos sent during the creation process
+          </li>
+        </ul>
+      </section>
+
+      {/* Form or Confirmation Card */}
+      {submitted ? (
+        <section
+          aria-live="polite"
+          className="h-fit rounded-3xl border border-black/8 bg-white p-8 text-center shadow-sm sm:p-12"
+        >
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+            <CheckCircle2 size={36} />
+          </div>
+          <h2 className="font-serif text-2xl font-bold sm:text-3xl text-neutral-900">
+            Your Brief Has Been Received
+          </h2>
+          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-black/60">
+            Thank you for sharing your vision. Our senior curator will review your dimensions, style, and
+            budget, and reach out via email or phone within 24 business hours with an initial estimate.
+          </p>
+          <div className="mt-8">
+            <Button
+              onClick={() => setSubmitted(false)}
+              className="bg-[#9a5d19] px-6 py-3 text-white hover:bg-[#7f4b12]"
+            >
+              Submit Another Commission Brief
+            </Button>
+          </div>
+        </section>
+      ) : (
+        <form
+          onSubmit={submit}
+          noValidate
+          className="rounded-3xl border border-black/8 bg-white p-6 shadow-sm sm:p-8"
+        >
+          <h2 className="font-serif text-2xl font-bold text-neutral-900">Your Commission Brief</h2>
+          <p className="mt-1 text-sm text-black/55">
+            Fields marked <span className="font-bold text-[#9a5d19]">*</span> are required.
+          </p>
+
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            <label className="text-sm font-semibold">
+              Full Name <span className="text-[#9a5d19]">*</span>
+              <Input
+                required
+                autoComplete="name"
+                maxLength={80}
+                value={form.name}
+                onChange={(e) => update("name", e.target.value)}
+                aria-invalid={Boolean(errors.name)}
+              />
+              {renderError("name")}
+            </label>
+
+            <label className="text-sm font-semibold">
+              Email Address <span className="text-[#9a5d19]">*</span>
+              <Input
+                required
+                type="email"
+                autoComplete="email"
+                maxLength={160}
+                value={form.email}
+                onChange={(e) => update("email", e.target.value)}
+                aria-invalid={Boolean(errors.email)}
+              />
+              {renderError("email")}
+            </label>
+
+            <label className="text-sm font-semibold">
+              Phone Number <span className="text-[#9a5d19]">*</span>
+              <Input
+                required
+                type="tel"
+                autoComplete="tel"
+                maxLength={20}
+                placeholder="+91 98765 43210"
+                value={form.phone}
+                onChange={(e) => update("phone", e.target.value)}
+                aria-invalid={Boolean(errors.phone)}
+              />
+              {renderError("phone")}
+            </label>
+
+            <div>
+              <span className="block text-sm font-semibold">
+                Artwork Type <span className="text-[#9a5d19]">*</span>
+              </span>
+              <div className="mt-1.5 grid grid-cols-2 gap-2" role="radiogroup">
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={form.artworkType === "hand-painted"}
+                  onClick={() => update("artworkType", "hand-painted")}
+                  className={`rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${
+                    form.artworkType === "hand-painted"
+                      ? "border-[#9a5d19] bg-[#9a5d19]/10 text-[#7f4b12]"
+                      : "border-black/15 text-black/65 hover:border-black/30"
+                  }`}
+                >
+                  Hand-Painted
+                </button>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={form.artworkType === "printed-canvas"}
+                  onClick={() => update("artworkType", "printed-canvas")}
+                  className={`rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${
+                    form.artworkType === "printed-canvas"
+                      ? "border-[#9a5d19] bg-[#9a5d19]/10 text-[#7f4b12]"
+                      : "border-black/15 text-black/65 hover:border-black/30"
+                  }`}
+                >
+                  Printed Canvas
+                </button>
+              </div>
+              {renderError("artworkType")}
+            </div>
+
+            <label className="text-sm font-semibold">
+              Preferred Canvas Size
+              <Input
+                maxLength={80}
+                placeholder="e.g. 36 × 48 in / 90 × 120 cm"
+                value={form.size}
+                onChange={(e) => update("size", e.target.value)}
+              />
+              {renderError("size")}
+            </label>
+
+            <label className="text-sm font-semibold">
+              Style / Theme
+              <Input
+                maxLength={80}
+                placeholder="Abstract, landscape, portrait, spiritual…"
+                value={form.style}
+                onChange={(e) => update("style", e.target.value)}
+              />
+              {renderError("style")}
+            </label>
+
+            <label className="text-sm font-semibold">
+              Approximate Budget (₹)
+              <Input
+                type="number"
+                min="0"
+                max="10000000"
+                placeholder="e.g. 25000"
+                value={form.budget}
+                onChange={(e) => update("budget", e.target.value)}
+                aria-invalid={Boolean(errors.budget)}
+              />
+              {renderError("budget")}
+            </label>
+
+            <label className="text-sm font-semibold">
+              Desired Completion Date
+              <Input
+                type="date"
+                value={form.deadline}
+                onChange={(e) => update("deadline", e.target.value)}
+              />
+              {renderError("deadline")}
+            </label>
+
+            <label className="text-sm font-semibold sm:col-span-2">
+              Artwork Requirements & Concept <span className="text-[#9a5d19]">*</span>
+              <textarea
+                required
+                minLength={10}
+                maxLength={3000}
+                rows={5}
+                className="mt-1.5 w-full rounded-xl border border-black/15 bg-white p-3 text-sm font-normal outline-none transition focus:border-[#9a5d19]"
+                placeholder="Describe your subject, colours, room lighting, mood, or custom story in at least 10 characters…"
+                value={form.description}
+                onChange={(e) => update("description", e.target.value)}
+                aria-invalid={Boolean(errors.description)}
+              />
+              <span className="mt-1 block text-right text-xs text-black/40 tabular-nums">
+                {form.description.trim().length} / 3000 characters
+              </span>
+              {renderError("description")}
+            </label>
+
+            <label className="text-sm font-semibold sm:col-span-2">
+              Additional Notes (Optional)
+              <textarea
+                maxLength={2000}
+                rows={3}
+                className="mt-1.5 w-full rounded-xl border border-black/15 bg-white p-3 text-sm font-normal outline-none transition focus:border-[#9a5d19]"
+                placeholder="Framing preferences, delivery city, or any specific instructions…"
+                value={form.notes}
+                onChange={(e) => update("notes", e.target.value)}
+              />
+              {renderError("notes")}
+            </label>
+
+            <label className="text-sm font-semibold sm:col-span-2">
+              Inspiration or Reference Image URL (Optional)
+              <Input
+                type="url"
+                maxLength={1000}
+                placeholder="https://images.unsplash.com/… or Pinterest/Drive link"
+                value={form.referenceImage}
+                onChange={(e) => update("referenceImage", e.target.value)}
+                aria-invalid={Boolean(errors.referenceImage)}
+              />
+              {renderError("referenceImage")}
+            </label>
+          </div>
+
+          {serverError && (
+            <div role="alert" className="mt-5 rounded-2xl bg-red-50 p-4 text-sm text-red-700">
+              {serverError}
+            </div>
+          )}
+
+          <Button
+            type="submit"
+            disabled={busy}
+            className="mt-6 w-full bg-[#9a5d19] py-3.5 text-white hover:bg-[#7f4b12] shadow"
+          >
+            {busy ? "Submitting Commission Brief…" : "Submit Custom Artwork Request"}
+          </Button>
+        </form>
+      )}
+    </main>
+  );
 }
-async function submit(e: React.FormEvent) {
-e.preventDefault(); if (busy) return; setServerError("");
-const parsed = customOrderRequestSchema.safeParse({ ...form, budget: form.budget === "" ? undefined : Number(form.budget), referenceImage: form.referenceImage === "" ? undefined : form.referenceImage });
-if (!parsed.success) { const fe: Record<string, string> = {}; for (const issue of parsed.error.issues) { const k = String(issue.path[0] ?? "form"); if (!fe[k]) fe[k] = issue.message; } setErrors(fe); return; }
-setBusy(true);
-try {
-const r = await fetch("/api/custom-orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(parsed.data) });
-let d: unknown = null; try { d = await r.json(); } catch { d = null; }
-if (!r.ok) { let m = "Could not submit your request. Please try again."; if (d && typeof d === "object" && "error" in d && typeof (d as { error: unknown }).error === "string") m = (d as { error: string }).error; throw new Error(m); }
-setSubmitted(true); setForm(EMPTY); setErrors({});
-} catch (err) { setServerError(err instanceof Error ? err.message : "Something went wrong. Please try again."); } finally { setBusy(false); }
-}
-function fieldError(key: string) { return errors[key] ? (<span role="alert" className="mt-1 block text-xs font-normal text-red-700">{errors[key]}</span>) : null; }
-return <main className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[.8fr_1.2fr] lg:px-8"><section className="pt-5" aria-labelledby="custom-artwork-heading"><p className="text-xs font-bold uppercase tracking-[.25em] text-[#9a5d19]">Made for your space</p><h1 id="custom-artwork-heading" className="mt-3 font-serif text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">Commission a custom artwork</h1><p className="mt-6 max-w-xl leading-8 text-black/65">Tell the artist what you have in mind. Share your preferred artwork type, size, style, budget and timeline. We will review the brief and contact you with a quote.</p><ul className="mt-8 grid gap-3 text-sm text-black/65"><li>Bespoke composition and colours</li><li>Custom sizes and framing options</li><li>Quote before work begins</li><li>Progress updates for commissioned pieces</li></ul></section>{submitted ? <section aria-live="polite" className="h-fit rounded-3xl bg-white p-8 text-center shadow-sm sm:p-12"><p aria-hidden="true" className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-green-50 text-2xl text-green-700">✓</p><h2 className="mt-5 font-serif text-3xl font-bold">Your custom artwork request has been received.</h2><p className="mx-auto mt-3 max-w-md text-sm leading-7 text-black/60">Thank you for sharing your brief. The ArtCanvas team will review your request and follow up by email or phone with next steps and a quote.</p><div className="mt-7"><Button onClick={() => setSubmitted(false)}>Submit another request</Button></div></section> : <form onSubmit={submit} noValidate className="rounded-3xl bg-white p-6 shadow-sm sm:p-8"><h2 className="font-serif text-2xl font-bold">Your brief</h2><p className="mt-1 text-sm text-black/55">Fields marked <span aria-hidden="true" className="font-bold text-[#9a5d19]">*</span> are required.</p><div className="mt-5 grid gap-4 sm:grid-cols-2"><label className={inputLabel} htmlFor="cf-name">Name <span aria-hidden="true" className="text-[#9a5d19]">*</span><Input id="cf-name" required autoComplete="name" maxLength={80} value={form.name} onChange={(e) => update("name", e.target.value)} aria-invalid={Boolean(errors.name)} />{fieldError("name")}</label><label className={inputLabel} htmlFor="cf-email">Email <span aria-hidden="true" className="text-[#9a5d19]">*</span><Input id="cf-email" required type="email" autoComplete="email" maxLength={160} value={form.email} onChange={(e) => update("email", e.target.value)} aria-invalid={Boolean(errors.email)} />{fieldError("email")}</label><label className={inputLabel} htmlFor="cf-phone">Phone <span aria-hidden="true" className="text-[#9a5d19]">*</span><Input id="cf-phone" required type="tel" autoComplete="tel" maxLength={20} placeholder="+91 98765 43210" value={form.phone} onChange={(e) => update("phone", e.target.value)} aria-invalid={Boolean(errors.phone)} />{fieldError("phone")}</label><div className={inputLabel}><span id="cf-type-label">Artwork type <span aria-hidden="true" className="text-[#9a5d19]">*</span></span><div role="radiogroup" aria-labelledby="cf-type-label" className="mt-2 grid grid-cols-2 gap-2"><button type="button" role="radio" aria-checked={form.artworkType === "hand-painted"} onClick={() => update("artworkType", "hand-painted")} className={form.artworkType === "hand-painted" ? "rounded-xl border border-[#9a5d19] bg-[#9a5d19]/5 px-3 py-2.5 text-sm font-semibold text-[#7f4b12]" : "rounded-xl border border-black/10 px-3 py-2.5 text-sm font-semibold text-black/60"}>Hand-Painted</button><button type="button" role="radio" aria-checked={form.artworkType === "printed-canvas"} onClick={() => update("artworkType", "printed-canvas")} className={form.artworkType === "printed-canvas" ? "rounded-xl border border-[#9a5d19] bg-[#9a5d19]/5 px-3 py-2.5 text-sm font-semibold text-[#7f4b12]" : "rounded-xl border border-black/10 px-3 py-2.5 text-sm font-semibold text-black/60"}>Printed Canvas</button></div>{fieldError("artworkType")}</div><label className={inputLabel} htmlFor="cf-size">Preferred size<Input id="cf-size" maxLength={80} placeholder="24 × 36 in" value={form.size} onChange={(e) => update("size", e.target.value)} />{fieldError("size")}</label><label className={inputLabel} htmlFor="cf-style">Style / category<Input id="cf-style" maxLength={80} placeholder="Abstract, landscape, portrait…" value={form.style} onChange={(e) => update("style", e.target.value)} />{fieldError("style")}</label><label className={inputLabel} htmlFor="cf-budget">Budget (₹)<Input id="cf-budget" type="number" min="0" max="10000000" inputMode="numeric" placeholder="e.g. 15000" value={form.budget} onChange={(e) => update("budget", e.target.value)} aria-invalid={Boolean(errors.budget)} />{fieldError("budget")}</label><label className={inputLabel} htmlFor="cf-deadline">Desired completion date<span className={helpText}>Optional — helps us plan the commission.</span><Input id="cf-deadline" type="date" value={form.deadline} onChange={(e) => update("deadline", e.target.value)} />{fieldError("deadline")}</label><label className={`${inputLabel} sm:col-span-2`} htmlFor="cf-description">Description / requirements <span aria-hidden="true" className="text-[#9a5d19]">*</span><span className={helpText}>Subject, colours, mood, room and style — minimum 10 characters.</span><textarea id="cf-description" required minLength={10} maxLength={3000} rows={6} className="mt-1 min-h-40 w-full rounded-xl border border-black/10 bg-white px-3 py-3 text-sm font-normal outline-none transition focus:border-[#9a5d19]" placeholder="Subject, colours, mood, room, style…" value={form.description} onChange={(e) => update("description", e.target.value)} aria-invalid={Boolean(errors.description)} aria-describedby="cf-description-count" /><span id="cf-description-count" className="mt-1 block text-xs font-normal tabular-nums text-black/45">{form.description.trim().length}/3000 characters</span>{fieldError("description")}</label><label className={`${inputLabel} sm:col-span-2`} htmlFor="cf-notes">Additional notes<span className={helpText}>Optional — framing, delivery city, or anything else we should know.</span><textarea id="cf-notes" maxLength={2000} rows={3} className="mt-1 w-full rounded-xl border border-black/10 bg-white px-3 py-3 text-sm font-normal outline-none transition focus:border-[#9a5d19]" placeholder="Anything else we should know…" value={form.notes} onChange={(e) => update("notes", e.target.value)} />{fieldError("notes")}</label><label className={`${inputLabel} sm:col-span-2`} htmlFor="cf-reference">Reference image URL<span className={helpText}>Optional — paste a link to inspiration imagery. Direct file upload will be supported here in a future update.</span><Input id="cf-reference" type="url" inputMode="url" maxLength={1000} placeholder="https://…" value={form.referenceImage} onChange={(e) => update("referenceImage", e.target.value)} aria-invalid={Boolean(errors.referenceImage)} />{fieldError("referenceImage")}</label></div>{serverError ? <p role="alert" className="mt-5 rounded-2xl bg-red-50 px-4 py-3 text-sm font-normal text-red-700">{serverError}</p> : null}<Button className="mt-6 w-full" disabled={busy} aria-busy={busy}>{busy ? "Sending request…" : "Submit Request"}</Button></form>}</main>}

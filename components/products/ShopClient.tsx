@@ -7,6 +7,7 @@ import { SortSelect } from "./SortSelect";
 import { ActiveFilters } from "./ActiveFilters";
 import { ProductGrid, ProductGridSkeleton } from "./ProductGrid";
 import { FilterDrawer } from "./FilterDrawer";
+import type { Route } from "next";
 import type { Product } from "@/types";
 import { parseFilters } from "./ProductFilters";
 
@@ -32,7 +33,7 @@ export function ShopClient({ products, title, eyebrow, intro, basePath = "/shop"
       const p = new URLSearchParams(decodeURIComponent(paramsRef.current || params.toString()));
       search ? p.set("q", search) : p.delete("q");
       const href = basePath + (p.toString() ? "?" + encodeURIComponent(p.toString()) : "");
-      router.push(href as never);
+      router.push(href as Route);
     }, 400);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { formatINR } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import type { Route } from "next";
 import { toast } from "sonner";
 
 declare global {
@@ -111,7 +112,7 @@ export function CheckoutClient({ freeShippingThreshold = 999, shippingFee = 99 }
           }
           clear();
           toast.success("Payment successful. Your order is confirmed.");
-          router.push((`/order-confirmation/${data.orderId}`) as never);
+          router.push(`/order-confirmation/${data.orderId}` as Route);
         },
         modal: { ondismiss: () => setLoading(false) }
       });

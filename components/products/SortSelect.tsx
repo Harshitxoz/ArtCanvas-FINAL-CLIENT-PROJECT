@@ -1,6 +1,8 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 
+import type { Route } from "next";
+
 const SORT_OPTIONS = [
   { value: "featured", label: "Featured" },
   { value: "newest", label: "Newest" },
@@ -18,7 +20,7 @@ export function SortSelect({ basePath = "/shop" }: { basePath?: string }) {
     const p = new URLSearchParams(params.toString());
     value ? p.set("sort", value) : p.delete("sort");
     const href = basePath + (p.toString() ? "?" + p.toString() : "");
-    router.push(href as never);
+    router.push(href as Route);
   }
 
   return (

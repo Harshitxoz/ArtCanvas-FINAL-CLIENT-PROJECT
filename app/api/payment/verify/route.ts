@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/db";
-import { sendOrderConfirmationEmail } from "@/lib/email";
+import { sendOrderConfirmationEmail, type EmailOrderData } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
@@ -51,8 +51,13 @@ export async function POST(req: Request) {
       ...order,
       _id: orderId,
       paymentId,
-      razorpayOrderId
-    } as any).catch((emailErr) => {
+      razorpayOrderId,
+      items: order.items || [],
+      customer: order.customer,
+      total: order.total,
+      subtotal: order.subtotal,
+      shipping: order.shipping,
+    } as EmailOrderData).catch((emailErr) => {
       console.error("[EMAIL_DISPATCH_WARNING]", emailErr);
     });
 

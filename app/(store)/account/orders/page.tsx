@@ -1,8 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ObjectId } from "mongodb";
+import type { Route } from "next";
 import { getSession } from "@/lib/auth";
 import { getDb } from "@/lib/db";
+import type { OrderDocument } from "@/models/order";
 import { formatINR } from "@/lib/utils";
 import { Package, Truck, ExternalLink, ArrowRight, Clock } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -50,14 +52,14 @@ export default async function OrdersPage() {
     );
   }
 
-  let orders: any[] = [];
+  let orders: (OrderDocument & { _id: ObjectId })[] = [];
   try {
     const db = await getDb();
-    orders = await db
+    orders = (await db
       .collection("orders")
       .find({ userId: new ObjectId(user.id) })
       .sort({ createdAt: -1 })
-      .toArray();
+      .toArray()) as (OrderDocument & { _id: ObjectId })[];
   } catch (err) {
     console.error("[ACCOUNT_ORDERS_ERROR]", err);
   }
@@ -92,7 +94,7 @@ export default async function OrdersPage() {
                   <div className="flex items-center gap-3">
                     {statusBadge(o.status)}
                     <Link
-                      href={(`/order-confirmation/${String(o._id)}`) as never}
+                      href={`/order-confirmation/${String(o._id)}` as Route}
                       className="inline-flex items-center gap-1 rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-700 hover:bg-neutral-50 hover:text-[#9a5d19]"
                     >
                       <span>Invoice</span>
