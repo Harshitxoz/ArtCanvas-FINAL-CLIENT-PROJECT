@@ -8,6 +8,7 @@ import type { OrderDocument } from "@/models/order";
 import { formatINR } from "@/lib/utils";
 import { Package, Truck, ExternalLink, ArrowRight, Clock } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { OrderTrackingStepper } from "@/components/checkout/OrderTrackingStepper";
 
 export const metadata = {
   title: "My Orders | ArtCanvas",
@@ -55,11 +56,24 @@ export default async function OrdersPage() {
   let orders: (OrderDocument & { _id: ObjectId })[] = [];
   try {
     const db = await getDb();
+    const userEmail = (user.email || "").toLowerCase().trim();
+    const query = userEmail
+      ? { $or: [{ userId: new ObjectId(user.id) }, { "customer.email": userEmail }] }
+      : { userId: new ObjectId(user.id) };
+
     orders = (await db
       .collection("orders")
-      .find({ userId: new ObjectId(user.id) })
+      .find(query)
       .sort({ createdAt: -1 })
       .toArray()) as (OrderDocument & { _id: ObjectId })[];
+
+    // Auto-link any previous guest orders matching this customer's email
+    if (userEmail && orders.length) {
+      db.collection("orders").updateMany(
+        { "customer.email": userEmail, userId: { $exists: false } },
+        { $set: { userId: new ObjectId(user.id) } }
+      ).catch(() => {});
+    }
   } catch (err) {
     console.error("[ACCOUNT_ORDERS_ERROR]", err);
   }
@@ -127,6 +141,17 @@ export default async function OrdersPage() {
                       </p>
                     </div>
                   ))}
+                </div>
+
+                {/* Shipment Stepper */}
+                <div className="px-5 pb-5 sm:px-6">
+                  <OrderTrackingStepper
+                    status={o.status}
+                    shippingCarrier={o.shippingCarrier}
+                    trackingNumber={o.trackingNumber}
+                    trackingUrl={o.trackingUrl}
+                    estimatedDelivery={o.estimatedDelivery}
+                  />
                 </div>
 
                 {/* Tracking & Footer */}

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { Route } from "next";
 import { Heart, Search, ShoppingBag, UserRound, Menu, X } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
 import { useState } from "react";
@@ -28,7 +29,7 @@ export function Navbar({ announcement, freeShippingThreshold, storeName, tagline
             <div className="hidden text-[9px] font-semibold uppercase tracking-[0.35em] text-black/55 sm:block">{tagline || "Art lives forever"}</div>
           </Link>
           <nav className="hidden shrink-0 items-center gap-4 text-[13px] font-medium lg:flex xl:gap-6 xl:text-sm">
-            <Link href="/">Home</Link><Link href="/shop">Shop</Link><Link href="/hand-painted">Hand-Painted</Link><Link href="/printed-canvas">Printed Canvas</Link><Link href="/categories">Categories</Link><Link href="/custom-artwork">Custom Art</Link><Link href="/about">About</Link>
+            <Link href="/">Home</Link><Link href="/shop">Shop</Link><Link href={"/art-finder" as Route} className="font-semibold text-[#9a5d19]">✨ Art Finder</Link><Link href="/hand-painted">Hand-Painted</Link><Link href="/printed-canvas">Printed Canvas</Link><Link href="/categories">Categories</Link><Link href="/custom-artwork">Custom Art</Link><Link href="/about">About</Link>
           </nav>
           <form action="/search" className="hidden max-w-xs flex-1 items-center rounded-full bg-black/5 px-4 xl:flex">
             <Search size={18} className="shrink-0" /><input name="q" placeholder="Search art, artists..." aria-label="Search artwork" className="w-full min-w-0 bg-transparent px-3 py-2 text-sm outline-none"/>
@@ -49,7 +50,7 @@ export function Navbar({ announcement, freeShippingThreshold, storeName, tagline
           </div>
         </form>}
         {open && <nav className="border-t border-black/5 bg-[#fffdf9] px-5 py-5 lg:hidden">
-          <div className="grid gap-4 text-sm"><Link onClick={() => setOpen(false)} href="/shop">Shop All</Link><Link onClick={() => setOpen(false)} href="/hand-painted">Hand-Painted</Link><Link onClick={() => setOpen(false)} href="/printed-canvas">Printed Canvas</Link><Link onClick={() => setOpen(false)} href="/categories">Categories</Link><Link onClick={() => setOpen(false)} href="/custom-artwork">Custom Art</Link><Link onClick={() => setOpen(false)} href="/about">About</Link></div>
+          <div className="grid gap-4 text-sm"><Link onClick={() => setOpen(false)} href="/shop">Shop All</Link><Link onClick={() => setOpen(false)} href={"/art-finder" as Route} className="font-semibold text-[#9a5d19]">✨ Art Finder Quiz</Link><Link onClick={() => setOpen(false)} href="/hand-painted">Hand-Painted</Link><Link onClick={() => setOpen(false)} href="/printed-canvas">Printed Canvas</Link><Link onClick={() => setOpen(false)} href="/categories">Categories</Link><Link onClick={() => setOpen(false)} href="/custom-artwork">Custom Art</Link><Link onClick={() => setOpen(false)} href="/about">About</Link></div>
         </nav>}
       </header>
     </>

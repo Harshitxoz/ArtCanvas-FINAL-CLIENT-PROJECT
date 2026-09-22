@@ -2,6 +2,7 @@ import { Hero } from "@/components/home/Hero";
 import { ShopType } from "@/components/home/ShopType";
 import { CategorySection } from "@/components/home/CategorySection";
 import { FeaturedCollection } from "@/components/home/FeaturedCollection";
+import { ArtFinderBanner } from "@/components/home/ArtFinderBanner";
 import { WhyChooseUs } from "@/components/home/WhyChooseUs";
 import { getSettings } from "@/lib/settings";
 
@@ -18,6 +19,7 @@ export default async function HomePage() {
       <ShopType />
       <CategorySection />
       <FeaturedCollection />
+      <ArtFinderBanner />
       <WhyChooseUs />
     </main>
   );

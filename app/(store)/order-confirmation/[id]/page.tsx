@@ -6,6 +6,7 @@ import { getDb } from "@/lib/db";
 import { formatINR } from "@/lib/utils";
 import { CheckCircle2, PackageCheck, Truck, ShieldCheck, Mail, Phone, MapPin } from "lucide-react";
 import { OrderConfirmationActions } from "@/components/checkout/OrderConfirmationActions";
+import { OrderTrackingStepper } from "@/components/checkout/OrderTrackingStepper";
 
 export const metadata = {
   title: "Order Confirmed | ArtCanvas",
@@ -66,6 +67,17 @@ export default async function OrderConfirmationPage({
           </div>
 
           <OrderConfirmationActions />
+        </div>
+
+        {/* Live Shipment Progress Stepper */}
+        <div className="mt-8 print:hidden">
+          <OrderTrackingStepper
+            status={order.status}
+            shippingCarrier={order.shippingCarrier}
+            trackingNumber={order.trackingNumber}
+            trackingUrl={order.trackingUrl}
+            estimatedDelivery={order.estimatedDelivery}
+          />
         </div>
 
         {/* Order Details Grid */}

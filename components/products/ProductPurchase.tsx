@@ -6,6 +6,9 @@ import { useCartStore } from "@/store/cart-store";
 import { formatINR } from "@/lib/utils";
 import type { CartItem, Product } from "@/types";
 import { toast } from "sonner";
+import { Eye } from "lucide-react";
+import { RoomVisualizerModal } from "./RoomVisualizerModal";
+import { DeliveryEstimator } from "./DeliveryEstimator";
 
 type FrameChoice = "unframed" | "framed";
 
@@ -16,6 +19,7 @@ function stockLabel(stock: number): string {
 }
 
 export function ProductPurchase({ product }: { product: Product }) {
+  const [visualizerOpen, setVisualizerOpen] = useState(false);
   const sizes = product.sizes || [];
   const [sizeIndex, setSizeIndex] = useState(() => {
     const first = sizes.map((s, i) => ({ s, i }))
@@ -100,6 +104,25 @@ export function ProductPurchase({ product }: { product: Product }) {
         <button type="button" disabled={soldOut} onClick={onBuy}
           className="inline-flex w-full items-center justify-center rounded-full border-2 border-[#17130f] px-5 py-3 text-sm font-semibold text-[#17130f] transition hover:bg-[#17130f] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9a5d19] disabled:cursor-not-allowed disabled:opacity-50">Buy Now</button>
       </div>
+
+      <button
+        type="button"
+        onClick={() => setVisualizerOpen(true)}
+        className="mt-3.5 flex w-full items-center justify-center gap-2 rounded-full border border-black/15 bg-white py-3 px-4 text-xs sm:text-sm font-semibold text-neutral-800 shadow-sm transition hover:border-[#9a5d19] hover:bg-[#faf7f2] hover:text-[#9a5d19]"
+      >
+        <Eye size={16} className="text-[#9a5d19]" />
+        <span>View on Wall & Frame Simulator</span>
+      </button>
+
+      <DeliveryEstimator />
+
+      <RoomVisualizerModal
+        product={product}
+        selectedSize={size?.label}
+        initialFrame={frame}
+        isOpen={visualizerOpen}
+        onClose={() => setVisualizerOpen(false)}
+      />
     </div>
   );
 }
