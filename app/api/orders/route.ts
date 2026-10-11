@@ -11,6 +11,7 @@ interface ProductDocument {
   _id: ObjectId;
   title: string;
   slug: string;
+  artType?: "hand-painted" | "printed-canvas";
   images: string[];
   sizes: { label: string; price: number; stock: number }[];
   frameAvailable?: boolean;
@@ -88,6 +89,7 @@ export async function POST(req: Request) {
         image: product.images[0] || "",
         size: matchingSize.label,
         frame: isFramed ? "framed" : "unframed",
+        artType: product.artType || "hand-painted",
         price: unitPrice,
         quantity: item.quantity,
       };

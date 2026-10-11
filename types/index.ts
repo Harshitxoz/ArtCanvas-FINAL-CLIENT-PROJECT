@@ -80,6 +80,27 @@ export interface CartItem {
   price: number;
   quantity: number;
   frame?: "unframed" | "framed";
+  artType?: ArtType;
+}
+
+export type NotificationType =
+  | "payment_confirmed"
+  | "order_status_update"
+  | "order_shipped"
+  | "order_delivered"
+  | "order_cancelled"
+  | "order_refunded";
+
+export interface OrderNotificationRecord {
+  type: NotificationType;
+  status: OrderStatus;
+  recipient: string;
+  sentAt: Date | string;
+  provider: "resend" | "smtp" | "mock";
+  messageId?: string;
+  success: boolean;
+  error?: string;
+  idempotencyKey: string;
 }
 
 export interface User {
@@ -105,7 +126,7 @@ export interface Order {
   subtotal: number;
   discount?: number;
   couponCode?: string;
-    shipping: number;
+  shipping: number;
   total: number;
   status: OrderStatus;
   paymentStatus: "pending" | "paid" | "failed";
@@ -116,6 +137,8 @@ export interface Order {
   trackingUrl?: string;
   estimatedDelivery?: string;
   adminShippingNotes?: string;
+  customerMessage?: string;
+  notifications?: OrderNotificationRecord[];
   refund?: {
     id: string;
     amount: number;

@@ -1,5 +1,5 @@
 import type { ObjectId } from "mongodb";
-import type { CartItem, OrderStatus } from "@/types";
+import type { CartItem, OrderStatus, OrderNotificationRecord } from "@/types";
 
 export interface OrderRefund {
   id: string;
@@ -11,6 +11,7 @@ export interface OrderRefund {
 export interface OrderDocument {
   _id?: ObjectId;
   userId?: ObjectId;
+  userEmail?: string;
   items: CartItem[];
   customer: {
     name: string; email: string; phone: string; address: string; city: string; state: string; postalCode: string;
@@ -29,7 +30,16 @@ export interface OrderDocument {
   trackingUrl?: string;
   estimatedDelivery?: string;
   adminShippingNotes?: string;
+  customerMessage?: string;
   refund?: OrderRefund;
+  notifications?: OrderNotificationRecord[];
+  latestNotification?: {
+    type: string;
+    sentAt: Date | string;
+    success: boolean;
+    error?: string;
+    recipient?: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }

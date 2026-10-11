@@ -7,6 +7,7 @@ import { OrderStatusControl } from "@/components/admin/OrderStatusControl";
 import { ShippingForm } from "@/components/admin/ShippingForm";
 import { RefundForm } from "@/components/admin/RefundForm";
 import { NotesForm } from "@/components/admin/NotesForm";
+import { NotificationHistory } from "@/components/admin/NotificationHistory";
 import { requireAdmin } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import type { OrderDocument } from "@/models/order";
@@ -45,6 +46,8 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
 
   const orderId = String(order._id);
   const placedAt = order.createdAt ? new Date(order.createdAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : "—";
+  const postal = order.customer.postalCode || "";
+  const fullAddress = `${order.customer.address}, ${order.customer.city}, ${order.customer.state} ${postal}`.trim();
 
   return (
     <AdminShell>
@@ -60,32 +63,82 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
         </div>
       </div>
 
+      {/* Customer & Delivery Summary Card */}
       <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-bold">Fulfilment Status</h2>
-        <p className="mt-1 text-sm text-black/55">Track this order as it moves through fulfilment, shipping and delivery.</p>
-        <div className="mt-4"><OrderStatusControl orderId={orderId} current={order.status} /></div>
+        <h2 className="text-xl font-bold">Customer & Delivery</h2>
+        <div className="mt-3 grid gap-3 sm:grid-cols-3 text-sm">
+          <div>
+            <span className="block text-xs font-semibold text-neutral-500 uppercase">Customer</span>
+            <p className="font-semibold text-neutral-900">{order.customer.name}</p>
+            <p className="text-neutral-600">{order.customer.email}</p>
+            <p className="text-neutral-600">{order.customer.phone}</p>
+          </div>
+          <div className="sm:col-span-2">
+            <span className="block text-xs font-semibold text-neutral-500 uppercase">Shipping Address</span>
+            <p className="text-neutral-800 leading-relaxed">{fullAddress}</p>
+          </div>
+        </div>
       </section>
 
+      {/* Order Status & Email Notification Section */}
+      <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
+        <h2 className="text-xl font-bold">Fulfilment & Delivery Status</h2>
+        <p className="mt-1 text-sm text-black/55">
+          Update status and courier details. Customer email notifications are automatically dispatched when changes are saved.
+        </p>
+        <div className="mt-4">
+          <OrderStatusControl
+            orderId={orderId}
+            current={order.status}
+            initialShipping={{
+              shippingCarrier: order.shippingCarrier || "",
+              trackingNumber: order.trackingNumber || "",
+              trackingUrl: order.trackingUrl || "",
+              estimatedDelivery: order.estimatedDelivery || "",
+              customerMessage: order.customerMessage || ""
+            }}
+          />
+        </div>
+      </section>
+
+      {/* Items & Financial Summary */}
       <div className="mt-7 grid gap-6 lg:grid-cols-[1fr_360px]">
         <section className="rounded-2xl bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-bold">Items</h2>
+          <h2 className="text-xl font-bold">Artworks in Order</h2>
           <div className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[560px] text-left text-sm">
-                            <thead><tr className="border-b"><th className="p-3">Artwork</th><th className="p-3">Size</th><th className="p-3">Frame</th><th className="p-3 text-right">Qty</th><th className="p-3 text-right">Unit</th><th className="p-3 text-right">Line Total</th></tr></thead>
+              <thead>
+                <tr className="border-b">
+                  <th className="p-3">Artwork</th>
+                  <th className="p-3">Type</th>
+                  <th className="p-3">Size</th>
+                  <th className="p-3">Frame</th>
+                  <th className="p-3 text-right">Qty</th>
+                  <th className="p-3 text-right">Unit</th>
+                  <th className="p-3 text-right">Total</th>
+                </tr>
+              </thead>
               <tbody>
                 {order.items.map((item: CartItem, i: number) => (
                   <tr key={i} className="border-b last:border-0">
                     <td className="p-3">
                       <div className="flex items-center gap-3">
-                        {item.image ? <img src={item.image} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" /> : <div className="h-12 w-12 shrink-0 rounded-lg bg-black/5" />}
+                        {item.image ? (
+                          <img src={item.image} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover border border-neutral-200" />
+                        ) : (
+                          <div className="h-12 w-12 shrink-0 rounded-lg bg-black/5" />
+                        )}
                         <div className="min-w-0">
-                          <Link href={`/products/${item.slug}`} className="block max-w-[240px] truncate font-semibold">{item.title}</Link>
+                          <Link href={`/products/${item.slug}`} className="block max-w-[200px] truncate font-semibold hover:underline">
+                            {item.title}
+                          </Link>
                         </div>
                       </div>
                     </td>
-                                        <td className="p-3">{item.size}</td>
-                    <td className="p-3">{item.frame === "framed" ? "Framed" : "Unframed"}</td>
-                    <td className="p-3 text-right">{item.quantity}</td>
+                    <td className="p-3 text-xs capitalize text-neutral-600">{item.artType ? item.artType.replace("-", " ") : "Artwork"}</td>
+                    <td className="p-3 text-neutral-800">{item.size}</td>
+                    <td className="p-3">{item.frame === "framed" ? <span className="font-medium text-[#9a5d19]">Framed</span> : "Unframed"}</td>
+                    <td className="p-3 text-right font-medium">{item.quantity}</td>
                     <td className="p-3 text-right">{formatINR(item.price)}</td>
                     <td className="p-3 text-right font-semibold">{formatINR(item.price * item.quantity)}</td>
                   </tr>
@@ -95,12 +148,21 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
           </div>
         </section>
 
-<section className="h-fit rounded-2xl bg-white p-6 shadow-sm">
+        <section className="h-fit rounded-2xl bg-white p-6 shadow-sm">
           <h2 className="text-xl font-bold">Summary</h2>
           <div className="mt-4 space-y-2 text-sm">
             <div className="flex justify-between"><span>Subtotal</span><b>{formatINR(order.subtotal)}</b></div>
+            {order.discount ? (
+              <div className="flex justify-between text-emerald-700">
+                <span>Discount {order.couponCode ? `(${order.couponCode})` : ""}</span>
+                <b>-{formatINR(order.discount)}</b>
+              </div>
+            ) : null}
             <div className="flex justify-between"><span>Shipping</span><b>{order.shipping ? formatINR(order.shipping) : "Free"}</b></div>
-            <div className="mt-2 flex justify-between text-lg"><span>Total</span><b>{formatINR(order.total)}</b></div>
+            <div className="mt-2 flex justify-between text-lg border-t border-neutral-200 pt-2 font-bold text-neutral-900">
+              <span>Total Paid</span>
+              <span className="text-[#9a5d19]">{formatINR(order.total)}</span>
+            </div>
           </div>
           {order.paymentId && (
             <div className="mt-4 rounded-xl bg-black/[0.03] p-3 text-xs text-black/60">
@@ -111,35 +173,57 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
         </section>
       </div>
 
+      {/* Manual Shipping Management */}
       <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-bold">Shipping</h2>
-        <p className="mt-1 text-sm text-black/55">Add carrier, tracking number, tracking URL and estimated delivery when the order is shipped.</p>
-        <ShippingForm orderId={orderId} initial={{ shippingCarrier: order.shippingCarrier || "", trackingNumber: order.trackingNumber || "", trackingUrl: order.trackingUrl || "", estimatedDelivery: order.estimatedDelivery || "", adminShippingNotes: order.adminShippingNotes || "" }} />
+        <h2 className="text-xl font-bold">Courier & Shipping Provider Details</h2>
+        <p className="mt-1 text-sm text-black/55">
+          Enter or update courier details, tracking link, and optional message for the customer.
+        </p>
+        <ShippingForm
+          orderId={orderId}
+          initial={{
+            shippingCarrier: order.shippingCarrier || "",
+            trackingNumber: order.trackingNumber || "",
+            trackingUrl: order.trackingUrl || "",
+            estimatedDelivery: order.estimatedDelivery || "",
+            adminShippingNotes: order.adminShippingNotes || "",
+            customerMessage: order.customerMessage || ""
+          }}
+        />
       </section>
 
+      {/* Customer Notification Audit Log & Manual Resend */}
       <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-bold">Refund</h2>
-        <p className="mt-1 text-sm text-black/55">Process a real Razorpay refund for this order. The order status is set to refunded only after the refund succeeds.</p>
+        <h2 className="text-xl font-bold">Customer Notification Audit Log</h2>
+        <p className="mt-1 text-sm text-black/55">
+          Verified delivery log of transactional emails sent to this customer. You can inspect delivery status or trigger manual resends.
+        </p>
+        <NotificationHistory
+          orderId={orderId}
+          currentStatus={order.status}
+          notifications={order.notifications || []}
+        />
+      </section>
+
+      {/* Refund Management */}
+      <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
+        <h2 className="text-xl font-bold">Refund Management</h2>
+        <p className="mt-1 text-sm text-black/55">Process an official Razorpay refund for this order. The customer receives a refund confirmation email upon completion.</p>
         <RefundForm orderId={orderId} orderTotal={order.total} existingRefund={order.refund} />
       </section>
 
+      {/* Internal Studio Notes */}
       <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-bold">Order History</h2>
-        <p className="mt-1 text-sm text-black/55">Status changes and refund actions are recorded here.</p>
-        <OrderHistory orderId={orderId} />
+        <h2 className="text-xl font-bold">Internal Studio Notes</h2>
+        <p className="mt-1 text-sm text-black/55">Internal notes for artists and packaging team. These are never shared with customers.</p>
+        <NotesForm orderId={orderId} initialNote={order.adminShippingNotes || ""} />
       </section>
 
-      <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-bold">Notes</h2>
-        <p className="mt-1 text-sm text-black/55">Internal admin notes. These are never shown to the customer.</p>
-                        <NotesForm orderId={orderId} initialNote={order.adminShippingNotes || ""} />
-      </section>
-
-            {order.refund && (
+      {order.refund && (
         <section className="mt-7 rounded-2xl bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-bold">Refund Details</h2>
+          <h2 className="text-xl font-bold">Processed Refund Record</h2>
           <div className="mt-4 rounded-xl bg-orange-50 p-4 text-sm">
-            <p className="font-semibold">Refunded</p>
+            <p className="font-semibold text-orange-950">Refund Confirmed</p>
             <p className="mt-1 text-black/60">Refund ID: {order.refund.id}</p>
             <p className="text-black/60">Amount: {formatINR(order.refund.amount)}</p>
             <p className="text-black/60">Processed: {order.refund.createdAt ? new Date(order.refund.createdAt).toLocaleString("en-IN") : "—"}</p>
@@ -148,16 +232,5 @@ export default async function OrderDetail({ params }: { params: Promise<{ id: st
         </section>
       )}
     </AdminShell>
-  );
-}
-
-type OrderHistoryData = { note: string; createdAt: string | Date }[];
-
-function OrderHistory({ orderId }: { orderId: string }) {
-  void orderId;
-  return (
-    <p className="mt-4 rounded-xl bg-[#eee9e1] p-4 text-sm text-black/55">
-      No admin actions have been recorded for this order yet.
-    </p>
   );
 }

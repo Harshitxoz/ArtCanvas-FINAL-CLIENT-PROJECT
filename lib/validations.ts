@@ -101,7 +101,13 @@ export const loginSchema = z.object({
 });
 
 export const orderStatusSchema = z.object({
-  status: z.enum(["pending", "paid", "processing", "packed", "shipped", "delivered", "cancelled", "refunded"])
+  status: z.enum(["pending", "paid", "processing", "packed", "shipped", "delivered", "cancelled", "refunded"]),
+  shippingCarrier: z.string().max(100).optional().or(z.literal("")),
+  trackingNumber: z.string().max(100).optional().or(z.literal("")),
+  trackingUrl: z.string().max(500).optional().or(z.literal("")).refine(v => !v || /^https?:\/\//i.test(v), { message: "Tracking URL must be a valid URL." }),
+  estimatedDelivery: z.string().max(100).optional().or(z.literal("")),
+  customerMessage: z.string().max(2000).optional().or(z.literal("")),
+  notifyCustomer: z.boolean().optional().default(true)
 });
 
 export const orderShippingSchema = z.object({
@@ -109,7 +115,9 @@ export const orderShippingSchema = z.object({
   trackingNumber: z.string().max(100).optional().or(z.literal("")),
   trackingUrl: z.string().max(500).optional().or(z.literal("")).refine(v => !v || /^https?:\/\//i.test(v), { message: "Tracking URL must be a valid URL." }),
   estimatedDelivery: z.string().max(100).optional().or(z.literal("")),
-  adminShippingNotes: z.string().max(2000).optional().or(z.literal(""))
+  customerMessage: z.string().max(2000).optional().or(z.literal("")),
+  adminShippingNotes: z.string().max(2000).optional().or(z.literal("")),
+  notifyCustomer: z.boolean().optional().default(true)
 });
 
 export const orderRefundSchema = z.object({

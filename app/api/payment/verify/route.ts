@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/db";
-import { sendOrderConfirmationEmail, type EmailOrderData } from "@/lib/email";
+import { sendAndRecordOrderNotification } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     const db = await getDb();
     const order = await db.collection("orders").findOne({ _id: new ObjectId(orderId) });
     if (!order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
-    if (order.paymentStatus === "paid") return NextResponse.json({ ok: true });
+    if (order.paymentStatus === "paid") return NextResponse.json({ ok: true, alreadyPaid: true });
 
     await db.collection("orders").updateOne(
       { _id: new ObjectId(orderId) },
@@ -46,18 +46,12 @@ export async function POST(req: Request) {
       }
     }
 
-    // Trigger transactional order confirmation email asynchronously
-    sendOrderConfirmationEmail({
-      ...order,
-      _id: orderId,
-      paymentId,
-      razorpayOrderId,
-      items: order.items || [],
-      customer: order.customer,
-      total: order.total,
-      subtotal: order.subtotal,
-      shipping: order.shipping,
-    } as EmailOrderData).catch((emailErr) => {
+    // Trigger transactional order confirmation email asynchronously with MongoDB idempotency
+    sendAndRecordOrderNotification({
+      orderId,
+      type: "payment_confirmed",
+      targetStatus: "paid"
+    }).catch((emailErr) => {
       console.error("[EMAIL_DISPATCH_WARNING]", emailErr);
     });
 

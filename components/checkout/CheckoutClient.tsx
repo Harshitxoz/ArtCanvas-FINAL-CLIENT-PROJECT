@@ -26,7 +26,26 @@ const FIELD_LABELS: Record<string, string> = {
   postalCode: "PIN code"
 };
 
-export function CheckoutClient({ freeShippingThreshold = 999, shippingFee = 99 }: { freeShippingThreshold?: number; shippingFee?: number }) {
+export interface CheckoutInitialUser {
+  name?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  isLoggedIn?: boolean;
+}
+
+export function CheckoutClient({
+  freeShippingThreshold = 999,
+  shippingFee = 99,
+  initialUser
+}: {
+  freeShippingThreshold?: number;
+  shippingFee?: number;
+  initialUser?: CheckoutInitialUser | null;
+}) {
   const items = useCartStore(s => s.items);
   const clear = useCartStore(s => s.clear);
   const router = useRouter();
@@ -35,7 +54,15 @@ export function CheckoutClient({ freeShippingThreshold = 999, shippingFee = 99 }
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [couponBusy, setCouponBusy] = useState(false);
-  const [form, setForm] = useState({name:"",email:"",phone:"",address:"",city:"",state:"",postalCode:""});
+  const [form, setForm] = useState({
+    name: initialUser?.name || "",
+    email: initialUser?.email || "",
+    phone: initialUser?.phone || "",
+    address: initialUser?.address || "",
+    city: initialUser?.city || "",
+    state: initialUser?.state || "",
+    postalCode: initialUser?.postalCode || ""
+  });
   const subtotal = items.reduce((s,i)=>s+i.price*i.quantity,0);
   const discountedSubtotal = Math.max(0, subtotal - discount);
   const shipping = discountedSubtotal >= freeShippingThreshold || discountedSubtotal===0 ? 0 : shippingFee;
@@ -131,6 +158,17 @@ export function CheckoutClient({ freeShippingThreshold = 999, shippingFee = 99 }
       <form onSubmit={submit} className="min-w-0 rounded-3xl border border-black/8 bg-white p-5 sm:p-8">
         <h1 className="text-3xl font-bold sm:text-4xl">Checkout</h1>
         <p className="mt-2 text-sm text-black/55">Your payment is processed through Razorpay after your order is validated.</p>
+
+        {initialUser?.isLoggedIn && (
+          <div className="mt-5 rounded-2xl bg-[#faf6f0] border border-[#e8ded1] p-3.5 text-xs text-neutral-700 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="flex h-2 w-2 rounded-full bg-emerald-500"></span>
+              <span>Signed in as <strong className="text-neutral-900">{initialUser.email}</strong></span>
+            </div>
+            <span className="text-[11px] text-[#9a5d19] font-medium">Order receipt will be triggered to this account email</span>
+          </div>
+        )}
+
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
           {Object.entries(form).map(([key,value]) =>
             <label key={key} className={key==="address"?"sm:col-span-2":""}>
