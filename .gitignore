@@ -11,3 +11,8 @@ npm-debug.log*
 tsconfig.tsbuildinfo
 
 next-env.d.ts
+
+# Temporary audit artifacts
+public/__audit*
+public/__overflow*
+public/audit-*
