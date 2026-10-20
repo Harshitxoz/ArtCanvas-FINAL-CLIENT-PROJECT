@@ -72,12 +72,12 @@ export function OrderStatusControl({
       if (!res.ok) throw new Error(data.error || "Could not update order status");
 
       if (notifyCustomer && data.notification) {
-        if (data.notification.ok) {
-          if (data.notification.alreadySent) {
-            toast.success(`Order updated to ${status} (email notification already sent)`);
-          } else {
-            toast.success(`Order updated to ${status} and customer notified via email`);
-          }
+        if (data.notification.alreadySent) {
+          toast.success(`Order updated to ${status} (email notification already sent)`);
+        } else if (data.notification.simulated || data.notification.provider === "mock") {
+          toast.info(`Order updated to ${status} (email simulated in mock mode — not sent)`);
+        } else if (data.notification.ok) {
+          toast.success(`Order updated to ${status} and customer notified via email`);
         } else {
           toast.warning(
             `Order updated to ${status}, but customer email failed: ${data.notification.error || "Delivery failed"}`

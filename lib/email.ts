@@ -80,6 +80,7 @@ export interface SendEmailResult {
   provider: EmailProviderType;
   messageId?: string;
   error?: string;
+  simulated?: boolean;
 }
 
 // -----------------------------------------------------------------------------
@@ -215,9 +216,15 @@ export async function sendEmail(payload: SendEmailPayload): Promise<SendEmailRes
     `[EMAIL_DEV_NOTICE] No email provider configured (RESEND_API_KEY or SMTP_USER/PASS).\n` +
     `Subject: "${payload.subject}"\n` +
     `Recipient(s): ${validRecipients.join(", ")}\n` +
-    `Order status and history saved cleanly.`
+    `Order status and history saved cleanly (email simulated in mock mode — not delivered).`
   );
-  return { ok: true, provider: "mock", messageId: mockId };
+  return {
+    ok: false,
+    provider: "mock",
+    simulated: true,
+    messageId: mockId,
+    error: "Mock mode: No email provider configured (RESEND_API_KEY or SMTP_USER/PASS)"
+  };
 }
 
 // -----------------------------------------------------------------------------
@@ -811,9 +818,19 @@ export interface DispatchNotificationOptions {
   customMessage?: string;
 }
 
+export interface DispatchNotificationResult {
+  ok: boolean;
+  alreadySent: boolean;
+  simulated?: boolean;
+  provider?: EmailProviderType;
+  messageId?: string;
+  error?: string;
+  idempotencyKey?: string;
+}
+
 export async function sendAndRecordOrderNotification(
   options: DispatchNotificationOptions
-): Promise<{ ok: boolean; alreadySent: boolean; messageId?: string; error?: string }> {
+): Promise<DispatchNotificationResult> {
   try {
     const db = await getDb();
     const orderDoc = await db.collection("orders").findOne({ _id: new ObjectId(String(options.orderId)) });
@@ -854,14 +871,16 @@ export async function sendAndRecordOrderNotification(
         : `status:${String(orderDoc._id)}:${options.targetStatus}`);
 
     // 3. Idempotency check: Do not re-send if already succeeded unless forced
+    // Genuinely successful deliveries have success: true and !simulated.
+    // Simulated mock mode attempts or failures do NOT block future real deliveries.
     const existingNotifications: OrderNotificationRecord[] = orderDoc.notifications || [];
     const alreadyDispatched = existingNotifications.some(
-      n => n.idempotencyKey === idempotencyKey && n.success
+      n => n.idempotencyKey === idempotencyKey && n.success && !n.simulated
     );
 
     if (alreadyDispatched && !options.forceResend) {
       console.log(`[NOTIFICATION_IDEMPOTENT] Duplicate skipped: ${idempotencyKey} for ${resolvedEmail}`);
-      return { ok: true, alreadySent: true, messageId: "already-sent" };
+      return { ok: true, alreadySent: true, messageId: "already-sent", idempotencyKey };
     }
 
     // 4. Build email payload
@@ -903,7 +922,12 @@ export async function sendAndRecordOrderNotification(
       text: builtEmail.text
     });
 
+    const isMock = sendResult.provider === "mock" || Boolean(sendResult.simulated);
+    const isRealSuccess = sendResult.ok && !isMock;
+
     // 6. Record notification attempt in MongoDB order document
+    // Genuinely successful emails have success: true, simulated: false
+    // Mock emails have success: false, simulated: true
     const record: OrderNotificationRecord = {
       type: options.type,
       status: options.targetStatus,
@@ -911,8 +935,9 @@ export async function sendAndRecordOrderNotification(
       sentAt: new Date(),
       provider: sendResult.provider,
       messageId: sendResult.messageId,
-      success: sendResult.ok,
-      error: sendResult.error,
+      success: isRealSuccess,
+      simulated: isMock,
+      error: isMock ? "Simulated in mock mode (no provider configured)" : sendResult.error,
       idempotencyKey
     };
 
@@ -924,9 +949,11 @@ export async function sendAndRecordOrderNotification(
           latestNotification: {
             type: options.type,
             sentAt: new Date(),
-            success: sendResult.ok,
-            error: sendResult.error,
-            recipient: resolvedEmail
+            success: isRealSuccess,
+            simulated: isMock,
+            error: record.error,
+            recipient: resolvedEmail,
+            provider: sendResult.provider
           },
           updatedAt: new Date()
         }
@@ -934,10 +961,13 @@ export async function sendAndRecordOrderNotification(
     );
 
     return {
-      ok: sendResult.ok,
+      ok: isRealSuccess,
+      simulated: isMock,
       alreadySent: false,
+      provider: sendResult.provider,
       messageId: sendResult.messageId,
-      error: sendResult.error
+      error: record.error,
+      idempotencyKey
     };
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : "Unexpected notification error";

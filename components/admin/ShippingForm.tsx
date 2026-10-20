@@ -42,12 +42,12 @@ export function ShippingForm({
       if (!res.ok) throw new Error(data.error || data.details || "Could not update shipping");
 
       if (notifyCustomer && data.notification) {
-        if (data.notification.ok) {
-          if (data.notification.alreadySent) {
-            toast.success("Shipping details saved (email notification already sent)");
-          } else {
-            toast.success("Shipping details saved and customer notified via email");
-          }
+        if (data.notification.alreadySent) {
+          toast.success("Shipping details saved (email notification already sent)");
+        } else if (data.notification.simulated || data.notification.provider === "mock") {
+          toast.info("Shipping details saved (email simulated in mock mode — not sent)");
+        } else if (data.notification.ok) {
+          toast.success("Shipping details saved and customer notified via email");
         } else {
           toast.warning(
             `Shipping details saved, but customer email failed: ${data.notification.error || "Delivery failed"}`

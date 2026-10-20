@@ -99,6 +99,7 @@ export interface OrderNotificationRecord {
   provider: "resend" | "smtp" | "mock";
   messageId?: string;
   success: boolean;
+  simulated?: boolean;
   error?: string;
   idempotencyKey: string;
 }

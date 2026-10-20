@@ -37,8 +37,10 @@ export interface OrderDocument {
     type: string;
     sentAt: Date | string;
     success: boolean;
+    simulated?: boolean;
     error?: string;
     recipient?: string;
+    provider?: string;
   };
   createdAt: Date;
   updatedAt: Date;
