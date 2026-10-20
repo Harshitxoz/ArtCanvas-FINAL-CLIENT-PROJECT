@@ -159,11 +159,39 @@ export async function POST(req: Request) {
         amount: Math.round(total * 100), // Razorpay accepts amount in paise
         currency: "INR",
         receipt: orderId,
+        notes: {
+          orderId,
+        },
       });
     } catch (paymentError) {
       console.error(
         "[RAZORPAY_ORDER_CREATE_ERROR]",
         paymentError instanceof Error ? paymentError.message : paymentError
+      );
+    }
+
+    if (!payment?.id) {
+      return NextResponse.json(
+        { error: "Payment gateway is not configured or unavailable." },
+        { status: 503 }
+      );
+    }
+
+    // Persist Razorpay order ID in MongoDB before returning checkout response to client
+    const linkResult = await db.collection("orders").updateOne(
+      { _id: insertResult.insertedId },
+      {
+        $set: {
+          razorpayOrderId: payment.id,
+          updatedAt: new Date(),
+        },
+      }
+    );
+
+    if (linkResult.matchedCount === 0) {
+      return NextResponse.json(
+        { error: "Could not link payment session to order. Please try again." },
+        { status: 500 }
       );
     }
 

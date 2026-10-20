@@ -123,23 +123,55 @@ export function CheckoutClient({
         prefill: { name: form.name, email: form.email, contact: form.phone },
         theme: { color: "#9a5d19" },
         handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
-          const verify = await fetch("/api/payment/verify", {
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({
-              orderId: data.orderId,
-              razorpayOrderId: response.razorpay_order_id,
-              paymentId: response.razorpay_payment_id,
-              signature: response.razorpay_signature
-            })
-          });
-          if (!verify.ok) {
-            toast.error("Payment verification failed. Please contact support.");
-            return;
+          setLoading(true);
+          const maxRetries = 5;
+          let attempt = 0;
+          let confirmed = false;
+          let lastErrorMessage = "";
+
+          while (attempt < maxRetries && !confirmed) {
+            attempt++;
+            try {
+              const verify = await fetch("/api/payment/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  orderId: data.orderId,
+                  razorpayOrderId: response.razorpay_order_id,
+                  paymentId: response.razorpay_payment_id,
+                  signature: response.razorpay_signature,
+                }),
+              });
+
+              const verifyData = await verify.json().catch(() => ({}));
+
+              if (verify.ok) {
+                confirmed = true;
+                clear();
+                toast.success("Payment successful. Your order is confirmed.");
+                router.push(`/order-confirmation/${data.orderId}` as Route);
+                return;
+              }
+
+              // If another worker or background step is still processing, wait and retry
+              if (verify.status === 202 || verifyData.processing) {
+                await new Promise((resolve) => setTimeout(resolve, 1500));
+                continue;
+              }
+
+              // Terminal error (e.g. out of stock / signature error / cancelled)
+              lastErrorMessage = verifyData.error || "Payment verification failed. Please contact support.";
+              break;
+            } catch (networkErr) {
+              lastErrorMessage = networkErr instanceof Error ? networkErr.message : "Network error during verification";
+              await new Promise((resolve) => setTimeout(resolve, 1500));
+            }
           }
-          clear();
-          toast.success("Payment successful. Your order is confirmed.");
-          router.push(`/order-confirmation/${data.orderId}` as Route);
+
+          if (!confirmed) {
+            setLoading(false);
+            toast.error(lastErrorMessage || "Payment verification could not be completed. Please contact support.");
+          }
         },
         modal: { ondismiss: () => setLoading(false) }
       });

@@ -25,6 +25,13 @@ export interface OrderDocument {
   paymentStatus: "pending" | "paid" | "failed";
   paymentId?: string;
   razorpayOrderId?: string;
+  verificationProcessing?: boolean;
+  verificationToken?: string;
+  verificationLeaseExpiresAt?: Date;
+  inventoryShortage?: boolean;
+  stockDeducted?: boolean;
+  refundStatus?: "pending" | "refund_pending" | "completed" | "failed";
+  refundError?: string;
   shippingCarrier?: string;
   trackingNumber?: string;
   trackingUrl?: string;

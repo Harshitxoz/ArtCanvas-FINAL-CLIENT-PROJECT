@@ -18,8 +18,15 @@ if (process.env.NODE_ENV !== "production" && client) {
   global.__artcanvasMongoClient = client;
 }
 
+export async function getClient(): Promise<MongoClient> {
+  if (!client) throw new Error("MongoDB is not configured.");
+  await client.connect();
+  return client;
+}
+
 export async function getDb(): Promise<Db> {
   if (!client) throw new Error("MongoDB is not configured.");
   await client.connect();
   return client.db(process.env.MONGODB_DB || "artcanvas");
 }
+
